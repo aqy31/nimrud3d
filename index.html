@@ -16,7 +16,7 @@
        ===================================================================== */
     :root {
       --lg-bg: rgba(14, 14, 18, 0.44);
-      --lg-bg-deep: rgba(10, 10, 14, 0.66);
+      --lg-bg-deep: rgba(10, 10, 14, 0.68);
       --lg-surface-light: rgba(255, 255, 255, 0.10);
       --lg-surface-hover: rgba(255, 255, 255, 0.18);
       --lg-active-bg: #ffffff;
@@ -152,15 +152,14 @@
     }
 
     /* =====================================================================
-       MINIMAL SINGLE TOP LIQUID GLASS CAPSULE
+       COMPACT SHORT TOP LIQUID GLASS CAPSULE (NO SCROLLING NEEDED)
        ===================================================================== */
     .top-capsule-wrap {
       position: fixed;
-      top: calc(12px + var(--safe-top));
+      top: calc(10px + var(--safe-top));
       left: 50%;
       transform: translateX(-50%);
       z-index: 25;
-      max-width: calc(100vw - 16px);
       pointer-events: none;
       transition: opacity 0.3s ease, transform 0.3s ease;
     }
@@ -173,22 +172,16 @@
       border: 1px solid var(--lg-border);
       box-shadow: var(--lg-shadow);
       border-radius: 999px;
-      padding: 5px 7px;
+      padding: 4px 6px;
       display: flex;
       align-items: center;
-      gap: 4px;
-      overflow-x: auto;
-      scrollbar-width: none;
-    }
-
-    .liquid-capsule::-webkit-scrollbar {
-      display: none;
+      gap: 3px;
     }
 
     .divider-v {
       width: 1px;
-      height: 20px;
-      background: rgba(255, 255, 255, 0.18);
+      height: 18px;
+      background: rgba(255, 255, 255, 0.2);
       margin: 0 2px;
       flex-shrink: 0;
     }
@@ -197,18 +190,26 @@
       background: transparent;
       color: var(--lg-text);
       border: 1px solid transparent;
-      padding: 6px 12px;
+      padding: 5px 10px;
       border-radius: 999px;
       font-family: inherit;
-      font-size: 0.76rem;
+      font-size: 0.74rem;
       font-weight: 700;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 5px;
+      justify-content: center;
+      gap: 4px;
       white-space: nowrap;
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
       flex-shrink: 0;
+    }
+
+    .lg-btn.icon-only {
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      font-size: 0.85rem;
     }
 
     .lg-btn:hover {
@@ -220,26 +221,23 @@
       background: var(--lg-active-bg);
       color: var(--lg-active-text);
       border-color: #ffffff;
-      box-shadow: 0 2px 14px rgba(255, 255, 255, 0.25);
+      box-shadow: 0 2px 12px rgba(255, 255, 255, 0.25);
     }
 
-    .lg-select {
-      background: var(--lg-surface-light);
-      color: #ffffff;
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      border-radius: 999px;
-      padding: 5px 10px;
-      font-family: inherit;
-      font-size: 0.74rem;
-      font-weight: 700;
-      cursor: pointer;
-      outline: none;
-      flex-shrink: 0;
-    }
-
-    .lg-select option {
-      background: #141418;
-      color: #ffffff;
+    @media (max-width: 480px) {
+      .liquid-capsule {
+        padding: 3px 5px;
+        gap: 2px;
+      }
+      .lg-btn {
+        padding: 4px 8px;
+        font-size: 0.68rem;
+      }
+      .lg-btn.icon-only {
+        width: 29px;
+        height: 29px;
+        font-size: 0.78rem;
+      }
     }
 
     /* Subtle Center Dot Crosshair */
@@ -255,7 +253,7 @@
       box-shadow: 0 0 6px rgba(0, 0, 0, 0.45);
       z-index: 10;
       pointer-events: none;
-      transition: opacity 0.2s ease, transform 0.2s ease;
+      transition: opacity 0.2s ease;
     }
 
     #crosshair.hidden {
@@ -265,10 +263,10 @@
     /* Collapsible Minimap (Hidden by Default) */
     #minimap-box {
       position: fixed;
-      top: calc(66px + var(--safe-top));
+      top: calc(58px + var(--safe-top));
       left: calc(14px + var(--safe-left));
-      width: 150px;
-      height: 150px;
+      width: 146px;
+      height: 146px;
       z-index: 18;
       background: var(--lg-bg);
       backdrop-filter: var(--lg-blur);
@@ -289,7 +287,7 @@
     }
 
     .minimap-header {
-      font-size: 0.65rem;
+      font-size: 0.64rem;
       font-weight: 700;
       color: var(--lg-text-muted);
       padding: 5px 10px;
@@ -310,10 +308,10 @@
        ===================================================================== */
     #academic-card {
       position: fixed;
-      top: calc(66px + var(--safe-top));
+      top: calc(58px + var(--safe-top));
       right: calc(14px + var(--safe-right));
-      width: min(365px, calc(100vw - 28px));
-      max-height: calc(100dvh - 160px);
+      width: min(360px, calc(100vw - 28px));
+      max-height: calc(100dvh - 150px);
       overflow-y: auto;
       z-index: 30;
       background: var(--lg-bg-deep);
@@ -354,14 +352,14 @@
     }
 
     .card-title {
-      font-size: 1.02rem;
+      font-size: 1.0rem;
       font-weight: 800;
       color: #ffffff;
       line-height: 1.35;
     }
 
     .card-en {
-      font-size: 0.72rem;
+      font-size: 0.71rem;
       color: var(--lg-text-muted);
       font-weight: 600;
       margin-top: 2px;
@@ -403,13 +401,13 @@
     }
 
     .meta-val {
-      font-size: 0.75rem;
+      font-size: 0.74rem;
       font-weight: 700;
       color: #ffffff;
     }
 
     .card-desc {
-      font-size: 0.82rem;
+      font-size: 0.81rem;
       line-height: 1.65;
       color: rgba(255, 255, 255, 0.88);
       margin-bottom: 12px;
@@ -430,7 +428,7 @@
       border-radius: 999px;
       padding: 8px 12px;
       font-family: inherit;
-      font-size: 0.76rem;
+      font-size: 0.75rem;
       font-weight: 800;
       cursor: pointer;
       display: flex;
@@ -543,7 +541,7 @@
       border: 1px solid var(--lg-border);
       box-shadow: var(--lg-shadow);
       border-radius: 999px;
-      padding: 6px 8px;
+      padding: 5px 8px;
       display: flex;
       align-items: center;
       gap: 6px;
@@ -569,7 +567,7 @@
       padding: 5px 12px;
       border-radius: 999px;
       font-family: inherit;
-      font-size: 0.74rem;
+      font-size: 0.72rem;
       font-weight: 700;
       cursor: pointer;
       white-space: nowrap;
@@ -592,7 +590,7 @@
       border-radius: 50%;
       background: rgba(255, 255, 255, 0.18);
       color: inherit;
-      font-size: 0.68rem;
+      font-size: 0.66rem;
       font-weight: 800;
       display: inline-flex;
       align-items: center;
@@ -617,7 +615,7 @@
 
     #restore-hud-btn {
       position: fixed;
-      top: calc(14px + var(--safe-top));
+      top: calc(12px + var(--safe-top));
       left: calc(14px + var(--safe-left));
       z-index: 50;
       background: var(--lg-bg);
@@ -626,10 +624,10 @@
       border: 1px solid var(--lg-border);
       box-shadow: var(--lg-shadow);
       color: #ffffff;
-      padding: 7px 14px;
+      padding: 6px 14px;
       border-radius: 999px;
       font-family: inherit;
-      font-size: 0.76rem;
+      font-size: 0.74rem;
       font-weight: 700;
       cursor: pointer;
       display: none;
@@ -642,7 +640,7 @@
     }
 
     /* =====================================================================
-       ULTRA-SMOOTH MOBILE VIRTUAL CONTROLS (LIQUID GLASS)
+       CLEAN DUAL-THUMB MOBILE CONTROLS (ONLY LEFT JOYSTICK, RIGHT SCREEN FREE)
        ===================================================================== */
     #mobile-controls {
       position: fixed;
@@ -656,15 +654,15 @@
       display: block;
     }
 
-    /* Ergonomic Liquid Glass Analog Thumbstick */
+    /* Ergonomic Liquid Glass Analog Thumbstick (Bottom-Left) */
     #joystick-zone {
       position: absolute;
-      bottom: calc(26px + var(--safe-bottom));
-      left: calc(22px + var(--safe-left));
-      width: 132px;
-      height: 132px;
+      bottom: calc(28px + var(--safe-bottom));
+      left: calc(24px + var(--safe-left));
+      width: 128px;
+      height: 128px;
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, rgba(12, 12, 16, 0.48) 100%);
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, rgba(12, 12, 16, 0.46) 100%);
       backdrop-filter: var(--lg-blur);
       -webkit-backdrop-filter: var(--lg-blur);
       border: 1.5px solid rgba(255, 255, 255, 0.28);
@@ -675,7 +673,7 @@
       align-items: center;
       justify-content: center;
       cursor: grab;
-      transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
 
     #joystick-zone.sprinting {
@@ -683,11 +681,10 @@
       box-shadow: 0 0 24px rgba(255, 255, 255, 0.35), inset 0 0 12px rgba(255, 255, 255, 0.25);
     }
 
-    /* Subtle directional arrows inside joystick pad */
     .joy-arrow {
       position: absolute;
-      font-size: 0.55rem;
-      color: rgba(255, 255, 255, 0.32);
+      font-size: 0.52rem;
+      color: rgba(255, 255, 255, 0.3);
       pointer-events: none;
     }
     .joy-arrow.up { top: 8px; left: 50%; transform: translateX(-50%); }
@@ -696,125 +693,17 @@
     .joy-arrow.right { right: 8px; top: 50%; transform: translateY(-50%); }
 
     #joystick-knob {
-      width: 52px;
-      height: 52px;
+      width: 50px;
+      height: 50px;
       border-radius: 50%;
       background: radial-gradient(circle at 35% 30%, #ffffff 0%, #dcdce2 100%);
       border: 1px solid #ffffff;
       box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45), inset 0 2px 4px rgba(255, 255, 255, 0.9);
       transform: translate(0px, 0px);
       pointer-events: none;
-      transition: transform 0.04s linear;
-    }
-
-    /* Right-side Mobile Action Cluster */
-    #mobile-action-btns {
-      position: absolute;
-      bottom: calc(26px + var(--safe-bottom));
-      right: calc(20px + var(--safe-right));
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      pointer-events: auto;
-    }
-
-    .mob-btn {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      background: var(--lg-bg);
-      backdrop-filter: var(--lg-blur);
-      -webkit-backdrop-filter: var(--lg-blur);
-      border: 1.5px solid var(--lg-border);
-      box-shadow: var(--lg-shadow);
-      color: #ffffff;
-      font-family: inherit;
-      font-size: 0.68rem;
-      font-weight: 800;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      line-height: 1.1;
-      cursor: pointer;
-      touch-action: manipulation;
-      transition: all 0.18s ease;
-    }
-
-    .mob-btn:active {
-      transform: scale(0.92);
-    }
-
-    .mob-btn.active {
-      background: #ffffff;
-      color: #09090b;
-      border-color: #ffffff;
-      box-shadow: 0 4px 18px rgba(255, 255, 255, 0.35);
-    }
-
-    /* Compact Bottom-Center Mobile Landmark Quick-Jumper */
-    #mobile-landmark-bar {
-      position: absolute;
-      bottom: calc(28px + var(--safe-bottom));
-      left: 50%;
-      transform: translateX(-50%);
-      pointer-events: auto;
-      background: var(--lg-bg);
-      backdrop-filter: var(--lg-blur);
-      -webkit-backdrop-filter: var(--lg-blur);
-      border: 1px solid var(--lg-border);
-      box-shadow: var(--lg-shadow);
-      border-radius: 999px;
-      padding: 4px 6px;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      max-width: calc(100vw - 320px);
-      min-width: 185px;
-      justify-content: space-between;
-    }
-
-    .mob-nav-arrow {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      color: #ffffff;
-      font-size: 0.85rem;
-      font-weight: 800;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      flex-shrink: 0;
-    }
-
-    .mob-nav-arrow:active {
-      background: #ffffff;
-      color: #09090b;
-    }
-
-    #mob-landmark-Current {
-      font-size: 0.72rem;
-      font-weight: 700;
-      color: #ffffff;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      padding: 0 6px;
-      cursor: pointer;
-      text-align: center;
-      flex: 1;
     }
 
     @media (max-width: 600px) {
-      #mobile-landmark-bar {
-        bottom: calc(170px + var(--safe-bottom));
-        left: calc(18px + var(--safe-left));
-        transform: none;
-        max-width: 210px;
-      }
       #academic-card {
         top: auto;
         bottom: calc(16px + var(--safe-bottom));
@@ -862,14 +751,14 @@
   <!-- Subtle Center Crosshair -->
   <div id="crosshair"></div>
 
-  <!-- Single Compact Liquid Glass Top Capsule -->
+  <!-- Short Compact Top Liquid Glass Capsule (Fits without scrolling) -->
   <div class="top-capsule-wrap">
     <div class="liquid-capsule">
       <button class="lg-btn active" id="btn-mode-walk" title="التجوال الحر داخل الأروقة (1)">
         🚶 تجوال
       </button>
       <button class="lg-btn" id="btn-mode-aerial" title="منظور علوي شامل للمخطط المعماري (2)">
-        🦅 منظور علوي
+        🦅 علوي
       </button>
       <button class="lg-btn" id="btn-mode-tour" title="جولة سينمائية آلية (3)">
         🎬 جولة
@@ -877,36 +766,22 @@
 
       <div class="divider-v"></div>
 
-      <button class="lg-btn active" id="btn-toggle-edu" title="إظهار أو إخفاء النقاط التعليمية (مفتاح H)">
-        📍 النقاط
+      <button class="lg-btn icon-only active" id="btn-toggle-edu" title="إظهار أو إخفاء النقاط التعليمية (H)">
+        📍
       </button>
-      <button class="lg-btn" id="btn-toggle-mobile" title="تفعيل أو إخفاء أزرار التحكم باللمس للهاتف">
-        📱 الهاتف
+      <button class="lg-btn icon-only" id="btn-cutaway" title="إظهار أو إخفاء السقوف الوقائية">
+        🏠
       </button>
-      <button class="lg-btn" id="btn-cutaway" title="إظهار أو إخفاء السقوف الوقائية">
-        🏠 السقوف
+      <button class="lg-btn icon-only" id="btn-toggle-map" title="إظهار أو إخفاء الخريطة المصغرة (M)">
+        🗺️
       </button>
-      <button class="lg-btn" id="btn-toggle-map" title="إظهار أو إخفاء الخريطة المصغرة (مفتاح M)">
-        🗺️ الخريطة
-      </button>
-      <button class="lg-btn" id="btn-torch" title="كشاف ضوئي للنقوش (مفتاح F)">
+      <button class="lg-btn icon-only" id="btn-torch" title="كشاف ضوئي للنقوش (F)">
         🔦
       </button>
-
-      <select class="lg-select" id="select-analysis" title="وضع العرض الأكاديمي">
-        <option value="realistic">عرض واقعي</option>
-        <option value="relief">إبراز النقوش</option>
-        <option value="wireframe">شبكة هندسية</option>
-      </select>
-
-      <select class="lg-select" id="select-lighting" title="الإضاءة والوقت">
-        <option value="morning">☀️ شمس ساطعة</option>
-        <option value="noon">🌤️ إضاءة أكاديمية</option>
-        <option value="sunset">🌅 غروب</option>
-        <option value="night">🌙 ليلي متحفي</option>
-      </select>
-
-      <button class="lg-btn" id="btn-clean-hud" title="إخفاء الواجهة بالكامل (مفتاح Tab)">
+      <button class="lg-btn icon-only" id="btn-lighting-cycle" title="تغيير الإضاءة والوقت">
+        ☀️
+      </button>
+      <button class="lg-btn icon-only" id="btn-clean-hud" title="إخفاء الواجهة بالكامل (Tab)">
         👁️
       </button>
     </div>
@@ -959,30 +834,14 @@
     </div>
   </aside>
 
-  <!-- Ultra-Smooth Mobile Virtual Touch Controls -->
+  <!-- Clean Dual-Thumb Mobile Touch Controls (Left Thumb Joystick + Free Right Screen for Look) -->
   <div id="mobile-controls" class="walk-active">
-    <!-- Left Analog Thumbstick -->
     <div id="joystick-zone" title="اسحب للمشي أو ادفع للأعلى للركض السريع">
       <span class="joy-arrow up">▲</span>
       <span class="joy-arrow down">▼</span>
       <span class="joy-arrow left">◀</span>
       <span class="joy-arrow right">▶</span>
       <div id="joystick-knob"></div>
-    </div>
-
-    <!-- Quick Mobile Landmark Stepper -->
-    <div id="mobile-landmark-bar">
-      <button class="mob-nav-arrow" id="mob-prev-lm" title="المعلم السابق">‹</button>
-      <div id="mob-landmark-Current" title="اضغط لعرض التفاصيل الأكاديمية">1/8 البوابة الغربية</div>
-      <button class="mob-nav-arrow" id="mob-next-lm" title="المعلم التالي">›</button>
-    </div>
-
-    <!-- Right Action Buttons -->
-    <div id="mobile-action-btns">
-      <button class="mob-btn" id="mob-sprint">⚡<span>سرعة</span></button>
-      <button class="mob-btn active" id="mob-edu">📍<span>نقاط</span></button>
-      <button class="mob-btn" id="mob-torch">🔦<span>كشاف</span></button>
-      <button class="mob-btn" id="mob-aerial">🦅<span>علوي</span></button>
     </div>
   </div>
 
@@ -1127,15 +986,7 @@
     // =========================================================================
     const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || window.innerWidth <= 900;
     let mobileModeActive = isTouchDevice;
-
-    const btnToggleMobile = document.getElementById('btn-toggle-mobile');
-    function setMobileMode(enabled) {
-      mobileModeActive = enabled;
-      document.body.classList.toggle('mobile-mode', enabled);
-      if (btnToggleMobile) btnToggleMobile.classList.toggle('active', enabled);
-    }
-    setMobileMode(mobileModeActive);
-    btnToggleMobile.addEventListener('click', () => setMobileMode(!mobileModeActive));
+    document.body.classList.toggle('mobile-mode', mobileModeActive);
 
     const container = document.getElementById('canvas-container');
     const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
@@ -1218,7 +1069,7 @@
     camera.add(torchLight.target);
     scene.add(camera);
 
-    // 3D Tap-to-Walk Floor Target Indicator (Monochrome Liquid Glass Ring)
+    // 3D Tap-to-Walk Floor Target Indicator
     const tapRingGeo = new THREE.RingGeometry(0.24, 0.36, 36);
     tapRingGeo.rotateX(-Math.PI / 2);
     const tapRingMat = new THREE.MeshBasicMaterial({
@@ -1231,6 +1082,14 @@
     const tapRingMesh = new THREE.Mesh(tapRingGeo, tapRingMat);
     tapRingMesh.visible = false;
     scene.add(tapRingMesh);
+
+    const LIGHTING_PRESETS = [
+      { key: 'morning', icon: '☀️' },
+      { key: 'noon', icon: '🌤️' },
+      { key: 'sunset', icon: '🌅' },
+      { key: 'night', icon: '🌙' }
+    ];
+    let currentLightingIdx = 0;
 
     function applyLightingPreset(preset) {
       const sunVec = new THREE.Vector3();
@@ -1648,7 +1507,6 @@
     let flyAnim = null;
     let tourIndex = 0;
     let tourTimer = 0;
-    let currentLandmarkIndex = 0;
 
     const keys = { forward: false, backward: false, left: false, right: false, sprint: false };
     let joyMoveX = 0;
@@ -1688,15 +1546,6 @@
     }
 
     const landmarksBar = document.getElementById('landmarks-bar');
-    const mobLandmarkLabel = document.getElementById('mob-landmark-Current');
-
-    function updateMobileLandmarkLabel(lm) {
-      const idx = LANDMARKS.findIndex(item => item.id === lm.id);
-      if (idx !== -1) currentLandmarkIndex = idx;
-      if (mobLandmarkLabel) {
-        mobLandmarkLabel.textContent = `${lm.num}/8 ${lm.shortTitle || lm.title.split('—')[0].trim()}`;
-      }
-    }
 
     function setMode(newMode) {
       currentMode = newMode;
@@ -1747,7 +1596,6 @@
     }
 
     function focusLandmarkAcademic(lm) {
-      updateMobileLandmarkLabel(lm);
       if (currentMode === 'walk') {
         currentMode = 'aerial';
         document.getElementById('btn-mode-walk').classList.remove('active');
@@ -1765,7 +1613,6 @@
     }
 
     function teleportWalkToLandmark(lm) {
-      updateMobileLandmarkLabel(lm);
       playerFeet.copy(lm.walkPos);
       const fh = sampleFloorHeight(playerFeet.x, playerFeet.z, playerFeet.y);
       if (fh !== null) playerFeet.y = fh;
@@ -1859,7 +1706,6 @@
 
     function showAcademicCard(lm) {
       currentLandmark = lm;
-      updateMobileLandmarkLabel(lm);
       document.getElementById('card-category').textContent = lm.category;
       document.getElementById('card-title').textContent = lm.title;
       document.getElementById('card-en').textContent = lm.en;
@@ -1891,11 +1737,9 @@
 
     // Direct Show/Hide Toggle for Educational Points
     const btnToggleEdu = document.getElementById('btn-toggle-edu');
-    const mobEduBtn = document.getElementById('mob-edu');
     function toggleEduPoints() {
       eduPointsOn = !eduPointsOn;
       btnToggleEdu.classList.toggle('active', eduPointsOn);
-      if (mobEduBtn) mobEduBtn.classList.toggle('active', eduPointsOn);
       hotspotsLayer.classList.toggle('edu-hidden', !eduPointsOn);
       landmarksBar.classList.toggle('hidden-bar', currentMode === 'walk' || !eduPointsOn);
       if (!eduPointsOn) {
@@ -1904,12 +1748,6 @@
       }
     }
     btnToggleEdu.addEventListener('click', toggleEduPoints);
-    if (mobEduBtn) {
-      mobEduBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        toggleEduPoints();
-      });
-    }
 
     // Minimap Toggle
     const minimapBox = document.getElementById('minimap-box');
@@ -1934,43 +1772,26 @@
     // Torch Toggle
     let torchOn = false;
     const btnTorch = document.getElementById('btn-torch');
-    const mobTorchBtn = document.getElementById('mob-torch');
     function toggleTorch() {
       torchOn = !torchOn;
       torchLight.intensity = torchOn ? 5.5 : 0;
       btnTorch.classList.toggle('active', torchOn);
-      if (mobTorchBtn) mobTorchBtn.classList.toggle('active', torchOn);
+      allSceneMaterials.forEach((mat) => {
+        if (!mat.transparent && mat.bumpMap) {
+          mat.bumpScale = torchOn ? 0.065 : 0.016;
+          mat.needsUpdate = true;
+        }
+      });
     }
     btnTorch.addEventListener('click', toggleTorch);
-    if (mobTorchBtn) {
-      mobTorchBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        toggleTorch();
-      });
-    }
 
-    // Analysis Mode Selector
-    document.getElementById('select-analysis').addEventListener('change', (e) => {
-      const mode = e.target.value;
-      allSceneMaterials.forEach((mat) => {
-        if (mat.transparent) return;
-        if (mode === 'realistic') {
-          mat.wireframe = false;
-          if (mat.bumpMap) mat.bumpScale = 0.016;
-        } else if (mode === 'relief') {
-          mat.wireframe = false;
-          if (mat.bumpMap) mat.bumpScale = 0.085;
-        } else if (mode === 'wireframe') {
-          mat.wireframe = true;
-        }
-        mat.needsUpdate = true;
-      });
-      if (mode === 'relief' && !torchOn) toggleTorch();
-    });
-
-    // Lighting Selector
-    document.getElementById('select-lighting').addEventListener('change', (e) => {
-      applyLightingPreset(e.target.value);
+    // One-Tap Lighting Cycle Button (Keeps top bar super short!)
+    const btnLightingCycle = document.getElementById('btn-lighting-cycle');
+    btnLightingCycle.addEventListener('click', () => {
+      currentLightingIdx = (currentLightingIdx + 1) % LIGHTING_PRESETS.length;
+      const p = LIGHTING_PRESETS[currentLightingIdx];
+      btnLightingCycle.textContent = p.icon;
+      applyLightingPreset(p.key);
     });
 
     // Clean HUD Toggle
@@ -1981,24 +1802,8 @@
       document.body.classList.remove('clean-hud');
     });
 
-    // Mobile Quick Landmark Stepper
-    document.getElementById('mob-prev-lm').addEventListener('click', (e) => {
-      e.stopPropagation();
-      currentLandmarkIndex = (currentLandmarkIndex - 1 + LANDMARKS.length) % LANDMARKS.length;
-      teleportWalkToLandmark(LANDMARKS[currentLandmarkIndex]);
-    });
-    document.getElementById('mob-next-lm').addEventListener('click', (e) => {
-      e.stopPropagation();
-      currentLandmarkIndex = (currentLandmarkIndex + 1) % LANDMARKS.length;
-      teleportWalkToLandmark(LANDMARKS[currentLandmarkIndex]);
-    });
-    mobLandmarkLabel.addEventListener('click', (e) => {
-      e.stopPropagation();
-      showAcademicCard(LANDMARKS[currentLandmarkIndex]);
-    });
-
     // =========================================================================
-    // 7. KEYBOARD, MOUSE & ULTRA-SMOOTH MOBILE TOUCH CONTROLLER
+    // 7. KEYBOARD, MOUSE & TRUE DUAL-THUMB SIMULTANEOUS MULTITOUCH CONTROLLER
     // =========================================================================
     window.addEventListener('keydown', (e) => {
       switch (e.code) {
@@ -2151,23 +1956,27 @@
     });
 
     renderer.domElement.addEventListener('dblclick', (e) => {
-      if (currentMode === 'walk') {
-        if (mobileModeActive) {
-          tryTapFloorWalk(e.clientX, e.clientY);
-        } else if (renderer.domElement.requestPointerLock) {
-          renderer.domElement.requestPointerLock();
-        }
+      if (currentMode === 'walk' && !mobileModeActive && renderer.domElement.requestPointerLock) {
+        renderer.domElement.requestPointerLock();
       }
     });
 
     // =========================================================================
-    // ANALOG THUMBSTICK (WORKS WITH BOTH TOUCH & MOUSE DRAG!)
+    // TRUE SIMULTANEOUS TWO-THUMB MULTITOUCH:
+    // Thumb 1 (joyTouchId) -> Moves Joystick
+    // Thumb 2 (lookTouchId) -> Rotates Camera Simultaneously!
     // =========================================================================
     const joyZone = document.getElementById('joystick-zone');
     const joyKnob = document.getElementById('joystick-knob');
     let joyTouchId = null;
     let joyMouseActive = false;
     const maxJoyRadius = 42;
+
+    let lookTouchId = null;
+    let lastLookX = 0;
+    let lastLookY = 0;
+    let touchStartTime = 0;
+    let touchStartPos = { x: 0, y: 0 };
 
     function updateJoystickFromClient(clientX, clientY) {
       const rect = joyZone.getBoundingClientRect();
@@ -2184,7 +1993,6 @@
       }
       joyKnob.style.transform = `translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px)`;
 
-      // Deadzone & smooth non-linear response curve for ultra-fine slow walking + fast push
       if (normDist < 0.08) {
         joyMoveX = 0;
         joyMoveY = 0;
@@ -2194,7 +2002,7 @@
         const angle = Math.atan2(dy, dx);
         joyMoveX = Math.cos(angle) * curved;
         joyMoveY = -Math.sin(angle) * curved;
-        joyAutoSprint = (normDist > 0.85 && joyMoveY > 0.55);
+        joyAutoSprint = (normDist > 0.82 && joyMoveY > 0.50);
       }
       joyZone.classList.toggle('sprinting', joyAutoSprint || keys.sprint);
       autoWalkTarget = null;
@@ -2211,66 +2019,23 @@
       joyZone.classList.toggle('sprinting', keys.sprint);
     }
 
+    // Start Joystick Touch
     joyZone.addEventListener('touchstart', (e) => {
       e.preventDefault();
       e.stopPropagation();
-      const touch = e.changedTouches[0];
-      joyTouchId = touch.identifier;
-      updateJoystickFromClient(touch.clientX, touch.clientY);
-    }, { passive: false });
-
-    joyZone.addEventListener('touchmove', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
       for (let i = 0; i < e.changedTouches.length; i++) {
-        if (e.changedTouches[i].identifier === joyTouchId) {
-          updateJoystickFromClient(e.changedTouches[i].clientX, e.changedTouches[i].clientY);
+        const t = e.changedTouches[i];
+        if (joyTouchId === null && t.identifier !== lookTouchId) {
+          joyTouchId = t.identifier;
+          updateJoystickFromClient(t.clientX, t.clientY);
           break;
         }
       }
     }, { passive: false });
 
-    joyZone.addEventListener('touchend', resetJoystick);
-    joyZone.addEventListener('touchcancel', resetJoystick);
-
-    // Also allow mouse dragging on the joystick so user can test on laptop/PC!
-    joyZone.addEventListener('mousedown', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      joyMouseActive = true;
-      updateJoystickFromClient(e.clientX, e.clientY);
-    });
-    window.addEventListener('mousemove', (e) => {
-      if (joyMouseActive) {
-        updateJoystickFromClient(e.clientX, e.clientY);
-      }
-    });
-    window.addEventListener('mouseup', () => {
-      if (joyMouseActive) resetJoystick();
-    });
-
-    // =========================================================================
-    // SILKY-SMOOTH MOBILE 360° TOUCH-LOOK + INERTIA + TAP-TO-WALK + PINCH ZOOM
-    // =========================================================================
-    let lookTouchId = null;
-    let lastLookX = 0;
-    let lastLookY = 0;
-    let touchStartTime = 0;
-    let touchStartPos = { x: 0, y: 0 };
-    let initialPinchDist = null;
-    let initialFov = 62;
-
+    // Start Look Touch on Canvas (Works even while joyTouchId is active!)
     renderer.domElement.addEventListener('touchstart', (e) => {
       if (currentMode !== 'walk') return;
-
-      if (e.touches.length === 2) {
-        const dx = e.touches[0].clientX - e.touches[1].clientX;
-        const dy = e.touches[0].clientY - e.touches[1].clientY;
-        initialPinchDist = Math.hypot(dx, dy);
-        initialFov = camera.fov;
-        return;
-      }
-
       for (let i = 0; i < e.changedTouches.length; i++) {
         const t = e.changedTouches[i];
         if (t.identifier === joyTouchId) continue;
@@ -2288,64 +2053,63 @@
       }
     }, { passive: true });
 
-    renderer.domElement.addEventListener('touchmove', (e) => {
+    // Unified Window TouchMove — Updates BOTH Joystick Thumb AND Look Thumb Independently & Simultaneously!
+    window.addEventListener('touchmove', (e) => {
       if (currentMode !== 'walk') return;
-
-      if (e.touches.length === 2 && initialPinchDist !== null) {
-        const dx = e.touches[0].clientX - e.touches[1].clientX;
-        const dy = e.touches[0].clientY - e.touches[1].clientY;
-        const dist = Math.hypot(dx, dy);
-        const scale = initialPinchDist / Math.max(20, dist);
-        camera.fov = THREE.MathUtils.clamp(initialFov * scale, 34, 72);
-        camera.updateProjectionMatrix();
-        return;
-      }
-
-      if (lookTouchId === null) return;
       for (let i = 0; i < e.changedTouches.length; i++) {
         const t = e.changedTouches[i];
-        if (t.identifier === lookTouchId) {
+
+        if (t.identifier === joyTouchId) {
+          updateJoystickFromClient(t.clientX, t.clientY);
+        } else if (t.identifier === lookTouchId) {
           const dx = t.clientX - lastLookX;
           const dy = t.clientY - lastLookY;
           lastLookX = t.clientX;
           lastLookY = t.clientY;
-          const dYaw = -dx * 0.0042;
-          const dPitch = -dy * 0.0038;
+          const dYaw = -dx * 0.0044;
+          const dPitch = -dy * 0.0040;
           targetYaw += dYaw;
           targetPitch = THREE.MathUtils.clamp(targetPitch + dPitch, -Math.PI * 0.42, Math.PI * 0.42);
           inertiaYaw = dYaw * 18;
           inertiaPitch = dPitch * 18;
-          break;
         }
       }
-    }, { passive: true });
+    }, { passive: false });
 
-    window.addEventListener('touchend', (e) => {
-      if (e.touches.length < 2) initialPinchDist = null;
+    // Unified Window TouchEnd/Cancel — Only releases the specific thumb that lifted!
+    function handleTouchEnd(e) {
       for (let i = 0; i < e.changedTouches.length; i++) {
         const t = e.changedTouches[i];
-        if (t.identifier === lookTouchId) {
+        if (t.identifier === joyTouchId) {
+          resetJoystick();
+        } else if (t.identifier === lookTouchId) {
           const dtTap = performance.now() - touchStartTime;
           const moveDist = Math.hypot(t.clientX - touchStartPos.x, t.clientY - touchStartPos.y);
-          if (dtTap < 220 && moveDist < 12) {
+          if (dtTap < 220 && moveDist < 12 && joyTouchId === null) {
             tryTapFloorWalk(t.clientX, t.clientY);
           }
           lookTouchId = null;
         }
       }
-    });
+    }
 
-    const mobSprintBtn = document.getElementById('mob-sprint');
-    mobSprintBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      keys.sprint = !keys.sprint;
-      mobSprintBtn.classList.toggle('active', keys.sprint);
-      joyZone.classList.toggle('sprinting', keys.sprint || joyAutoSprint);
-    });
+    window.addEventListener('touchend', handleTouchEnd, { passive: true });
+    window.addEventListener('touchcancel', handleTouchEnd, { passive: true });
 
-    document.getElementById('mob-aerial').addEventListener('click', (e) => {
+    // Mouse support for testing the joystick on desktop
+    joyZone.addEventListener('mousedown', (e) => {
       e.preventDefault();
-      setMode(currentMode === 'walk' ? 'aerial' : 'walk');
+      e.stopPropagation();
+      joyMouseActive = true;
+      updateJoystickFromClient(e.clientX, e.clientY);
+    });
+    window.addEventListener('mousemove', (e) => {
+      if (joyMouseActive) {
+        updateJoystickFromClient(e.clientX, e.clientY);
+      }
+    });
+    window.addEventListener('mouseup', () => {
+      if (joyMouseActive) resetJoystick();
     });
 
     // =========================================================================
@@ -2459,7 +2223,7 @@
           if (cb) cb();
         }
       } else if (currentMode === 'walk') {
-        // 1. Apply swipe inertia when thumb/mouse is released
+        // 1. Apply swipe inertia when look thumb/mouse is released
         if (lookTouchId === null && !isMouseDragging) {
           if (Math.abs(inertiaYaw) > 0.0001 || Math.abs(inertiaPitch) > 0.0001) {
             targetYaw += inertiaYaw * dt;
@@ -2488,7 +2252,6 @@
           desiredMove.addScaledVector(rightVec, inputX);
           if (desiredMove.length() > 1) desiredMove.normalize();
         } else if (autoWalkTarget) {
-          // Smooth One-Tap Floor Auto-Walk
           const toTargetX = autoWalkTarget.x - playerFeet.x;
           const toTargetZ = autoWalkTarget.z - playerFeet.z;
           const distToTarget = Math.hypot(toTargetX, toTargetZ);
@@ -2505,7 +2268,7 @@
         const isSprinting = keys.sprint || joyAutoSprint;
         const maxSpeed = isSprinting ? 7.5 : 4.3;
 
-        // 3. Smooth velocity acceleration & damping (zero jerkiness)
+        // 3. Smooth velocity acceleration & damping
         const velLerp = 1 - Math.exp(-15 * dt);
         playerVelX = THREE.MathUtils.lerp(playerVelX, desiredMove.x * maxSpeed, velLerp);
         playerVelZ = THREE.MathUtils.lerp(playerVelZ, desiredMove.z * maxSpeed, velLerp);
