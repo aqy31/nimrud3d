@@ -1,0 +1,2616 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>نمرود — تجربة الهاتف السلسة | القصر الشمالي الغربي</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    /* =====================================================================
+       MONOCHROME BLACK & WHITE "LIQUID GLASS" DESIGN SYSTEM
+       ===================================================================== */
+    :root {
+      --lg-bg: rgba(14, 14, 18, 0.44);
+      --lg-bg-deep: rgba(10, 10, 14, 0.66);
+      --lg-surface-light: rgba(255, 255, 255, 0.10);
+      --lg-surface-hover: rgba(255, 255, 255, 0.18);
+      --lg-active-bg: #ffffff;
+      --lg-active-text: #09090b;
+      --lg-border: rgba(255, 255, 255, 0.24);
+      --lg-border-bright: rgba(255, 255, 255, 0.55);
+      --lg-text: #ffffff;
+      --lg-text-muted: rgba(255, 255, 255, 0.72);
+      --lg-shadow: 0 12px 36px rgba(0, 0, 0, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.35), inset 0 -1px 0 rgba(255, 255, 255, 0.08);
+      --lg-blur: blur(28px) saturate(190%);
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-left: env(safe-area-inset-left, 0px);
+      --safe-right: env(safe-area-inset-right, 0px);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      height: 100dvh;
+      overflow: hidden;
+      overscroll-behavior: none;
+      touch-action: none;
+      background: #101216;
+      font-family: 'Cairo', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--lg-text);
+    }
+
+    #canvas-container {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      touch-action: none;
+    }
+
+    /* =====================================================================
+       LIQUID GLASS LOADING SCREEN (BLACK & WHITE)
+       ===================================================================== */
+    #loading-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: radial-gradient(circle at 50% 40%, #1f2229 0%, #090a0d 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.6s;
+    }
+
+    #loading-screen.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .loader-glass-card {
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: var(--lg-blur);
+      -webkit-backdrop-filter: var(--lg-blur);
+      border: 1px solid var(--lg-border);
+      box-shadow: var(--lg-shadow);
+      border-radius: 28px;
+      padding: 36px 40px;
+      max-width: 440px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .spinner-ring {
+      width: 52px;
+      height: 52px;
+      margin: 0 auto 20px;
+      border-radius: 50%;
+      border: 2.5px solid rgba(255, 255, 255, 0.16);
+      border-top-color: #ffffff;
+      animation: spin 0.9s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-title {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 6px;
+      letter-spacing: -0.2px;
+    }
+
+    .loading-subtitle {
+      font-size: 0.86rem;
+      color: var(--lg-text-muted);
+      margin-bottom: 22px;
+      line-height: 1.6;
+    }
+
+    .progress-bar-wrap {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+
+    #progress-bar-fill {
+      width: 0%;
+      height: 100%;
+      background: #ffffff;
+      border-radius: 99px;
+      transition: width 0.2s ease;
+    }
+
+    #loading-status {
+      font-size: 0.78rem;
+      color: var(--lg-text-muted);
+      font-weight: 600;
+    }
+
+    /* =====================================================================
+       MINIMAL SINGLE TOP LIQUID GLASS CAPSULE
+       ===================================================================== */
+    .top-capsule-wrap {
+      position: fixed;
+      top: calc(12px + var(--safe-top));
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 25;
+      max-width: calc(100vw - 16px);
+      pointer-events: none;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .liquid-capsule {
+      pointer-events: auto;
+      background: var(--lg-bg);
+      backdrop-filter: var(--lg-blur);
+      -webkit-backdrop-filter: var(--lg-blur);
+      border: 1px solid var(--lg-border);
+      box-shadow: var(--lg-shadow);
+      border-radius: 999px;
+      padding: 5px 7px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .liquid-capsule::-webkit-scrollbar {
+      display: none;
+    }
+
+    .divider-v {
+      width: 1px;
+      height: 20px;
+      background: rgba(255, 255, 255, 0.18);
+      margin: 0 2px;
+      flex-shrink: 0;
+    }
+
+    .lg-btn {
+      background: transparent;
+      color: var(--lg-text);
+      border: 1px solid transparent;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-family: inherit;
+      font-size: 0.76rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      flex-shrink: 0;
+    }
+
+    .lg-btn:hover {
+      background: var(--lg-surface-hover);
+      border-color: rgba(255, 255, 255, 0.18);
+    }
+
+    .lg-btn.active {
+      background: var(--lg-active-bg);
+      color: var(--lg-active-text);
+      border-color: #ffffff;
+      box-shadow: 0 2px 14px rgba(255, 255, 255, 0.25);
+    }
+
+    .lg-select {
+      background: var(--lg-surface-light);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 999px;
+      padding: 5px 10px;
+      font-family: inherit;
+      font-size: 0.74rem;
+      font-weight: 700;
+      cursor: pointer;
+      outline: none;
+      flex-shrink: 0;
+    }
+
+    .lg-select option {
+      background: #141418;
+      color: #ffffff;
+    }
+
+    /* Subtle Center Dot Crosshair */
+    #crosshair {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.75);
+      box-shadow: 0 0 6px rgba(0, 0, 0, 0.45);
+      z-index: 10;
+      pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    #crosshair.hidden {
+      opacity: 0;
+    }
+
+    /* Collapsible Minimap (Hidden by Default) */
+    #minimap-box {
+      position: fixed;
+      top: calc(66px + var(--safe-top));
+      left: calc(14px + var(--safe-left));
+      width: 150px;
+      height: 150px;
+      z-index: 18;
+      background: var(--lg-bg);
+      backdrop-filter: var(--lg-blur);
+      -webkit-backdrop-filter: var(--lg-blur);
+      border: 1px solid var(--lg-border);
+      box-shadow: var(--lg-shadow);
+      border-radius: 22px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    #minimap-box.hidden {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-10px) scale(0.95);
+    }
+
+    .minimap-header {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--lg-text-muted);
+      padding: 5px 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    #minimap-canvas {
+      width: 100%;
+      flex: 1;
+      cursor: pointer;
+    }
+
+    /* =====================================================================
+       LIQUID GLASS ACADEMIC CARD (MONOCHROME BLACK & WHITE)
+       ===================================================================== */
+    #academic-card {
+      position: fixed;
+      top: calc(66px + var(--safe-top));
+      right: calc(14px + var(--safe-right));
+      width: min(365px, calc(100vw - 28px));
+      max-height: calc(100dvh - 160px);
+      overflow-y: auto;
+      z-index: 30;
+      background: var(--lg-bg-deep);
+      backdrop-filter: var(--lg-blur);
+      -webkit-backdrop-filter: var(--lg-blur);
+      border: 1px solid var(--lg-border-bright);
+      box-shadow: var(--lg-shadow);
+      border-radius: 24px;
+      padding: 18px;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+    }
+
+    #academic-card.collapsed {
+      transform: translateX(115%);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+      padding-bottom: 10px;
+    }
+
+    .card-badge {
+      display: inline-block;
+      font-size: 0.66rem;
+      font-weight: 800;
+      color: #09090b;
+      background: rgba(255, 255, 255, 0.92);
+      padding: 2px 10px;
+      border-radius: 99px;
+      margin-bottom: 5px;
+    }
+
+    .card-title {
+      font-size: 1.02rem;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.35;
+    }
+
+    .card-en {
+      font-size: 0.72rem;
+      color: var(--lg-text-muted);
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    .close-card-btn {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      color: #ffffff;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .card-meta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .meta-box {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 14px;
+      padding: 7px 10px;
+    }
+
+    .meta-label {
+      font-size: 0.64rem;
+      color: var(--lg-text-muted);
+      display: block;
+    }
+
+    .meta-val {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .card-desc {
+      font-size: 0.82rem;
+      line-height: 1.65;
+      color: rgba(255, 255, 255, 0.88);
+      margin-bottom: 12px;
+      text-align: justify;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .action-btn {
+      flex: 1;
+      background: var(--lg-active-bg);
+      color: var(--lg-active-text);
+      border: 1px solid #ffffff;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-family: inherit;
+      font-size: 0.76rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .action-btn.secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: #ffffff;
+      border: 1px solid var(--lg-border);
+    }
+
+    /* =====================================================================
+       MINIMAL LIQUID GLASS 3D PINS
+       ===================================================================== */
+    #hotspots-layer {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 12;
+      overflow: hidden;
+      transition: opacity 0.3s ease;
+    }
+
+    #hotspots-layer.edu-hidden {
+      opacity: 0 !important;
+      pointer-events: none !important;
+      visibility: hidden;
+    }
+
+    .hotspot-marker {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      pointer-events: auto;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.2s ease, opacity 0.25s ease;
+    }
+
+    .hotspot-marker:hover {
+      transform: translate(-50%, -54%) scale(1.12);
+      z-index: 30;
+    }
+
+    .hotspot-pin {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(16, 16, 20, 0.58);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1.5px solid rgba(255, 255, 255, 0.88);
+      color: #ffffff;
+      font-weight: 800;
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+      transition: all 0.2s ease;
+    }
+
+    .hotspot-marker:hover .hotspot-pin {
+      background: #ffffff;
+      color: #09090b;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
+    }
+
+    .hotspot-label {
+      margin-top: 5px;
+      background: var(--lg-bg-deep);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--lg-border);
+      color: #ffffff;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      white-space: nowrap;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+      opacity: 0;
+      transform: translateY(-4px);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      pointer-events: none;
+    }
+
+    .hotspot-marker:hover .hotspot-label,
+    body.aerial-active .hotspot-label {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Bottom Bar — Only visible in Aerial Overview Mode */
+    .bottom-bar {
+      position: fixed;
+      bottom: calc(14px + var(--safe-bottom));
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;
+      max-width: min(920px, calc(100vw - 24px));
+      background: var(--lg-bg);
+      backdrop-filter: var(--lg-blur);
+      -webkit-backdrop-filter: var(--lg-blur);
+      border: 1px solid var(--lg-border);
+      box-shadow: var(--lg-shadow);
+      border-radius: 999px;
+      padding: 6px 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+    }
+
+    .bottom-bar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .bottom-bar.hidden-bar {
+      transform: translate(-50%, 150%);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .landmark-pill {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      color: var(--lg-text);
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-family: inherit;
+      font-size: 0.74rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .landmark-pill.active {
+      background: var(--lg-active-bg);
+      color: var(--lg-active-text);
+      border-color: #ffffff;
+    }
+
+    .pill-num {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.18);
+      color: inherit;
+      font-size: 0.68rem;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .landmark-pill.active .pill-num {
+      background: #09090b;
+      color: #ffffff;
+    }
+
+    /* Full Immersion Clean Screen Mode */
+    body.clean-hud .top-capsule-wrap,
+    body.clean-hud #minimap-box,
+    body.clean-hud .bottom-bar,
+    body.clean-hud #academic-card,
+    body.clean-hud #hotspots-layer,
+    body.clean-hud #mobile-controls {
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+
+    #restore-hud-btn {
+      position: fixed;
+      top: calc(14px + var(--safe-top));
+      left: calc(14px + var(--safe-left));
+      z-index: 50;
+      background: var(--lg-bg);
+      backdrop-filter: var(--lg-blur);
+      -webkit-backdrop-filter: var(--lg-blur);
+      border: 1px solid var(--lg-border);
+      box-shadow: var(--lg-shadow);
+      color: #ffffff;
+      padding: 7px 14px;
+      border-radius: 999px;
+      font-family: inherit;
+      font-size: 0.76rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: none;
+    }
+
+    body.clean-hud #restore-hud-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* =====================================================================
+       ULTRA-SMOOTH MOBILE VIRTUAL CONTROLS (LIQUID GLASS)
+       ===================================================================== */
+    #mobile-controls {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 18;
+      display: none;
+    }
+
+    body.mobile-mode #mobile-controls.walk-active {
+      display: block;
+    }
+
+    /* Ergonomic Liquid Glass Analog Thumbstick */
+    #joystick-zone {
+      position: absolute;
+      bottom: calc(26px + var(--safe-bottom));
+      left: calc(22px + var(--safe-left));
+      width: 132px;
+      height: 132px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, rgba(12, 12, 16, 0.48) 100%);
+      backdrop-filter: var(--lg-blur);
+      -webkit-backdrop-filter: var(--lg-blur);
+      border: 1.5px solid rgba(255, 255, 255, 0.28);
+      box-shadow: var(--lg-shadow);
+      pointer-events: auto;
+      touch-action: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: grab;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    }
+
+    #joystick-zone.sprinting {
+      border-color: #ffffff;
+      box-shadow: 0 0 24px rgba(255, 255, 255, 0.35), inset 0 0 12px rgba(255, 255, 255, 0.25);
+    }
+
+    /* Subtle directional arrows inside joystick pad */
+    .joy-arrow {
+      position: absolute;
+      font-size: 0.55rem;
+      color: rgba(255, 255, 255, 0.32);
+      pointer-events: none;
+    }
+    .joy-arrow.up { top: 8px; left: 50%; transform: translateX(-50%); }
+    .joy-arrow.down { bottom: 8px; left: 50%; transform: translateX(-50%); }
+    .joy-arrow.left { left: 8px; top: 50%; transform: translateY(-50%); }
+    .joy-arrow.right { right: 8px; top: 50%; transform: translateY(-50%); }
+
+    #joystick-knob {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, #ffffff 0%, #dcdce2 100%);
+      border: 1px solid #ffffff;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45), inset 0 2px 4px rgba(255, 255, 255, 0.9);
+      transform: translate(0px, 0px);
+      pointer-events: none;
+      transition: transform 0.04s linear;
+    }
+
+    /* Right-side Mobile Action Cluster */
+    #mobile-action-btns {
+      position: absolute;
+      bottom: calc(26px + var(--safe-bottom));
+      right: calc(20px + var(--safe-right));
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: auto;
+    }
+
+    .mob-btn {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: var(--lg-bg);
+      backdrop-filter: var(--lg-blur);
+      -webkit-backdrop-filter: var(--lg-blur);
+      border: 1.5px solid var(--lg-border);
+      box-shadow: var(--lg-shadow);
+      color: #ffffff;
+      font-family: inherit;
+      font-size: 0.68rem;
+      font-weight: 800;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      line-height: 1.1;
+      cursor: pointer;
+      touch-action: manipulation;
+      transition: all 0.18s ease;
+    }
+
+    .mob-btn:active {
+      transform: scale(0.92);
+    }
+
+    .mob-btn.active {
+      background: #ffffff;
+      color: #09090b;
+      border-color: #ffffff;
+      box-shadow: 0 4px 18px rgba(255, 255, 255, 0.35);
+    }
+
+    /* Compact Bottom-Center Mobile Landmark Quick-Jumper */
+    #mobile-landmark-bar {
+      position: absolute;
+      bottom: calc(28px + var(--safe-bottom));
+      left: 50%;
+      transform: translateX(-50%);
+      pointer-events: auto;
+      background: var(--lg-bg);
+      backdrop-filter: var(--lg-blur);
+      -webkit-backdrop-filter: var(--lg-blur);
+      border: 1px solid var(--lg-border);
+      box-shadow: var(--lg-shadow);
+      border-radius: 999px;
+      padding: 4px 6px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      max-width: calc(100vw - 320px);
+      min-width: 185px;
+      justify-content: space-between;
+    }
+
+    .mob-nav-arrow {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+      font-size: 0.85rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .mob-nav-arrow:active {
+      background: #ffffff;
+      color: #09090b;
+    }
+
+    #mob-landmark-Current {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #ffffff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      padding: 0 6px;
+      cursor: pointer;
+      text-align: center;
+      flex: 1;
+    }
+
+    @media (max-width: 600px) {
+      #mobile-landmark-bar {
+        bottom: calc(170px + var(--safe-bottom));
+        left: calc(18px + var(--safe-left));
+        transform: none;
+        max-width: 210px;
+      }
+      #academic-card {
+        top: auto;
+        bottom: calc(16px + var(--safe-bottom));
+        right: 12px;
+        left: 12px;
+        width: auto;
+        max-height: 52dvh;
+      }
+    }
+  </style>
+
+  <!-- Import Map for Three.js r160 -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+
+  <!-- Loading Screen -->
+  <div id="loading-screen">
+    <div class="loader-glass-card">
+      <div class="spinner-ring"></div>
+      <div class="loading-title">القصر الشمالي الغربي — نمرود</div>
+      <div class="loading-subtitle">
+        التجربة الافتراضية والأكاديمية ثلاثية الأبعاد
+      </div>
+      <div class="progress-bar-wrap">
+        <div id="progress-bar-fill"></div>
+      </div>
+      <div id="loading-status">جاري التحميل (0%)...</div>
+    </div>
+  </div>
+
+  <!-- 3D Viewport Container -->
+  <div id="canvas-container"></div>
+
+  <!-- Floating 3D Academic Hotspots Layer -->
+  <div id="hotspots-layer"></div>
+
+  <!-- Subtle Center Crosshair -->
+  <div id="crosshair"></div>
+
+  <!-- Single Compact Liquid Glass Top Capsule -->
+  <div class="top-capsule-wrap">
+    <div class="liquid-capsule">
+      <button class="lg-btn active" id="btn-mode-walk" title="التجوال الحر داخل الأروقة (1)">
+        🚶 تجوال
+      </button>
+      <button class="lg-btn" id="btn-mode-aerial" title="منظور علوي شامل للمخطط المعماري (2)">
+        🦅 منظور علوي
+      </button>
+      <button class="lg-btn" id="btn-mode-tour" title="جولة سينمائية آلية (3)">
+        🎬 جولة
+      </button>
+
+      <div class="divider-v"></div>
+
+      <button class="lg-btn active" id="btn-toggle-edu" title="إظهار أو إخفاء النقاط التعليمية (مفتاح H)">
+        📍 النقاط
+      </button>
+      <button class="lg-btn" id="btn-toggle-mobile" title="تفعيل أو إخفاء أزرار التحكم باللمس للهاتف">
+        📱 الهاتف
+      </button>
+      <button class="lg-btn" id="btn-cutaway" title="إظهار أو إخفاء السقوف الوقائية">
+        🏠 السقوف
+      </button>
+      <button class="lg-btn" id="btn-toggle-map" title="إظهار أو إخفاء الخريطة المصغرة (مفتاح M)">
+        🗺️ الخريطة
+      </button>
+      <button class="lg-btn" id="btn-torch" title="كشاف ضوئي للنقوش (مفتاح F)">
+        🔦
+      </button>
+
+      <select class="lg-select" id="select-analysis" title="وضع العرض الأكاديمي">
+        <option value="realistic">عرض واقعي</option>
+        <option value="relief">إبراز النقوش</option>
+        <option value="wireframe">شبكة هندسية</option>
+      </select>
+
+      <select class="lg-select" id="select-lighting" title="الإضاءة والوقت">
+        <option value="morning">☀️ شمس ساطعة</option>
+        <option value="noon">🌤️ إضاءة أكاديمية</option>
+        <option value="sunset">🌅 غروب</option>
+        <option value="night">🌙 ليلي متحفي</option>
+      </select>
+
+      <button class="lg-btn" id="btn-clean-hud" title="إخفاء الواجهة بالكامل (مفتاح Tab)">
+        👁️
+      </button>
+    </div>
+  </div>
+
+  <button id="restore-hud-btn">👁️ إظهار الواجهة</button>
+
+  <!-- Collapsible Minimap -->
+  <div id="minimap-box" class="hidden">
+    <div class="minimap-header">
+      <span>المخطط</span>
+      <span id="coords-readout" style="font-family: monospace;"></span>
+    </div>
+    <canvas id="minimap-canvas" width="200" height="200"></canvas>
+  </div>
+
+  <!-- Liquid Glass Academic Card -->
+  <aside id="academic-card" class="collapsed">
+    <div class="card-header">
+      <div>
+        <span class="card-badge" id="card-category">معلم أثري</span>
+        <div class="card-title" id="card-title">بوابة اللاماسو</div>
+        <div class="card-en" id="card-en">Lamassu Gateway</div>
+      </div>
+      <button class="close-card-btn" id="btn-close-card" title="إغلاق">✕</button>
+    </div>
+    <div class="card-meta-grid">
+      <div class="meta-box">
+        <span class="meta-label">الحقبة التاريخية</span>
+        <span class="meta-val" id="card-era">آشور ناصربال الثاني (883–859 ق.م)</span>
+      </div>
+      <div class="meta-box">
+        <span class="meta-label">المادة والعنصر المعماري</span>
+        <span class="meta-val" id="card-mat">حجر المرمر الموصلي</span>
+      </div>
+    </div>
+    <p class="card-desc" id="card-desc"></p>
+    <div class="card-actions" style="margin-bottom: 8px;">
+      <button class="action-btn secondary" id="btn-audio-guide" style="width: 100%; flex: 100%;">
+        🔊 استمع للشرح الصوتي
+      </button>
+    </div>
+    <div class="card-actions">
+      <button class="action-btn" id="btn-walk-here">
+        🚶 انزل وتجول هنا
+      </button>
+      <button class="action-btn secondary" id="btn-aerial-back">
+        🦅 منظور علوي
+      </button>
+    </div>
+  </aside>
+
+  <!-- Ultra-Smooth Mobile Virtual Touch Controls -->
+  <div id="mobile-controls" class="walk-active">
+    <!-- Left Analog Thumbstick -->
+    <div id="joystick-zone" title="اسحب للمشي أو ادفع للأعلى للركض السريع">
+      <span class="joy-arrow up">▲</span>
+      <span class="joy-arrow down">▼</span>
+      <span class="joy-arrow left">◀</span>
+      <span class="joy-arrow right">▶</span>
+      <div id="joystick-knob"></div>
+    </div>
+
+    <!-- Quick Mobile Landmark Stepper -->
+    <div id="mobile-landmark-bar">
+      <button class="mob-nav-arrow" id="mob-prev-lm" title="المعلم السابق">‹</button>
+      <div id="mob-landmark-Current" title="اضغط لعرض التفاصيل الأكاديمية">1/8 البوابة الغربية</div>
+      <button class="mob-nav-arrow" id="mob-next-lm" title="المعلم التالي">›</button>
+    </div>
+
+    <!-- Right Action Buttons -->
+    <div id="mobile-action-btns">
+      <button class="mob-btn" id="mob-sprint">⚡<span>سرعة</span></button>
+      <button class="mob-btn active" id="mob-edu">📍<span>نقاط</span></button>
+      <button class="mob-btn" id="mob-torch">🔦<span>كشاف</span></button>
+      <button class="mob-btn" id="mob-aerial">🦅<span>علوي</span></button>
+    </div>
+  </div>
+
+  <!-- Bottom Landmarks Bar (Shown in Aerial Mode) -->
+  <nav class="bottom-bar hidden-bar" id="landmarks-bar"></nav>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { Sky } from 'three/addons/objects/Sky.js';
+
+    // =========================================================================
+    // 1. CURATED ACADEMIC & ARCHITECTURAL LANDMARKS
+    // =========================================================================
+    const LANDMARKS = [
+      {
+        id: 'west_lamassu',
+        num: 1,
+        shortTitle: 'البوابة الغربية',
+        title: 'البوابة الملكية الغربية — ثيران اللاماسو المجنحة',
+        en: 'West Royal Gateway — Winged Lamassu Colossi',
+        category: 'بوابة ملكية ومنحوتات حارسة',
+        era: 'آشور ناصربال الثاني (883–859 ق.م)',
+        material: 'حجر المرمر الموصلي + عقد طابوق مفخور',
+        desc: 'يمثل هذا المدخل أحد أبرز مداخل قاعة العرش في القصر الشمالي الغربي بنمرود. يحرس البوابة ثوران مجنحان برأس بشري (لاماسو) منحوتان بدقة عالية من حجر المرمر الجبسي، يعلوهما قوس معماري مشيد بالطابوق الآشوري التقليدي وسقف وقائي حديث يحمي الواجهة من العوامل الجوية.',
+        target: new THREE.Vector3(-24.5, 2.8, -333.5),
+        camPos: new THREE.Vector3(-24.5, 3.1, -321.0),
+        walkPos: new THREE.Vector3(-24.5, 1.12, -322.0),
+        walkYaw: 0
+      },
+      {
+        id: 'east_portal',
+        num: 2,
+        shortTitle: 'بوابة العرش الشرقية',
+        title: 'بوابة العرش الشرقية واللوحة التوثيقية',
+        en: 'Eastern Throne Room Portal & Monumental Arch',
+        category: 'مدخل قاعة العرش',
+        era: 'العصر الآشوري الحديث — القرن 9 ق.م',
+        material: 'مرمر منحوت + دعامات طابوق لبن',
+        desc: 'البوابة الشرقية المناظرة في واجهة قاعة العرش، تضم بقايا التماثيل الحارسة الضخمة والألواح الحجرية المنحوتة (Orthostats) التي توثق المواكب الملكية، مع عتبات حجرية أصلية منقوشة بالخط المسماري عند مدخل القاعة.',
+        target: new THREE.Vector3(21.2, 3.0, -332.2),
+        camPos: new THREE.Vector3(21.2, 3.2, -320.5),
+        walkPos: new THREE.Vector3(21.2, 1.19, -322.5),
+        walkYaw: 0
+      },
+      {
+        id: 'central_arch',
+        num: 3,
+        shortTitle: 'البوابة المركزية',
+        title: 'البوابة المركزية وقوس الطابوق الآشوري',
+        en: 'Central Mud-Brick Archway & Inner Portal',
+        category: 'عمارة الأقواس والقباب',
+        era: '883–859 ق.م (ترميم وتوثيق معماري)',
+        material: 'طابوق طيني مجفف بالشمس + ألواح مرمر',
+        desc: 'ممر محوري يربط بين الساحة الكبرى والأجنحة الداخلية للقصر. يبرز فيه القوس الآشوري المشيد بحلقات الطابوق المتدرجة مع تماثيل حارسة على الجانبين ومظلة حماية معدنية تحفظ النقوش السفلية من مياه الأمطار.',
+        target: new THREE.Vector3(-3.8, 3.2, -301.8),
+        camPos: new THREE.Vector3(-3.8, 2.8, -289.5),
+        walkPos: new THREE.Vector3(-3.8, 0.55, -291.5),
+        walkYaw: 0
+      },
+      {
+        id: 'winged_genius',
+        num: 4,
+        shortTitle: 'رواق المنحوتات',
+        title: 'رواق المنحوتات — الجني المجنح والشجرة المقدسة',
+        en: 'Relief Corridor — Winged Apkalu & Sacred Tree',
+        category: 'ألواح جدارية بارزة (Orthostats)',
+        era: 'آشور ناصربال الثاني (القرن 9 ق.م)',
+        material: 'ألواح مرمر موصلي منقوشة بالخط المسماري',
+        desc: 'سلسلة من الألواح الجدارية البارزة التي تكسو أسفل جدران الطابوق اللبن، تصور الكائنات الحارسة المجنحة (أبكالو) وهي تؤدي طقوس التطهير والبركة أمام الشجرة الآشورية المقدسة، ويتوسط كل لوح النقش القياسي (Standard Inscription) بالخط المسماري.',
+        target: new THREE.Vector3(-5.75, 2.9, -316.9),
+        camPos: new THREE.Vector3(-5.75, 2.7, -309.5),
+        walkPos: new THREE.Vector3(-5.75, 1.12, -311.0),
+        walkYaw: 0
+      },
+      {
+        id: 'three_groups',
+        num: 5,
+        shortTitle: 'الجدارية الشرقية',
+        title: 'جدارية المجموعات الثلاث الشرقية',
+        en: 'Eastern Gallery — Three-Groups Relief Wall',
+        category: 'فن النحت البارز الآشوري',
+        era: 'العصر الآشوري الحديث (883–859 ق.م)',
+        material: 'حجر كلسي/مرمر منحوت بدقة',
+        desc: 'جدارية ممتدة في الجناح الشرقي للساحة، تُظهر دقة الفنان الآشوري في نحت التفاصيل التشريحية والملابس الملكية والأجنحة المتناظرة، مع الحفاظ على تناسق الأفاريز الحجرية على امتداد الممر.',
+        target: new THREE.Vector3(17.5, 2.1, -286.2),
+        camPos: new THREE.Vector3(10.5, 2.2, -286.2),
+        walkPos: new THREE.Vector3(11.8, 0.55, -286.2),
+        walkYaw: -Math.PI / 2
+      },
+      {
+        id: 'sacred_wall',
+        num: 6,
+        shortTitle: 'الجدار المقدس (S)',
+        title: 'الجدار المقدس الجنوبي — جناح القاعة S',
+        en: 'Southern Wing (Room S) — Sacred Relief Wall',
+        category: 'أجنحة القصر الملكية (Room S)',
+        era: 'آشور ناصربال الثاني',
+        material: 'ألواح مرمرية + سقوف وقائية مضاءة طبيعياً',
+        desc: 'يقع هذا الجدار في الجناح الجنوبي (غرفة S) المحمي بسقف وقائي ذي مناور علوية مفتوحة تسمح بدخول الإضاءة الطبيعية الموزعة دون تعريض المنحوتات للتآكل المباشر.',
+        target: new THREE.Vector3(-14.4, 2.2, -256.1),
+        camPos: new THREE.Vector3(-14.4, 2.3, -264.5),
+        walkPos: new THREE.Vector3(-14.4, 0.53, -263.0),
+        walkYaw: Math.PI
+      },
+      {
+        id: 'great_courtyard',
+        num: 7,
+        shortTitle: 'الساحة الملكية',
+        title: 'الساحة الملكية الكبرى والتبليط الحجري التاريخي',
+        en: 'Great Royal Courtyard & Historic Stone Paving',
+        category: 'الفضاءات المعمارية المفتوحة',
+        era: 'تخطيط القصر الآشوري (القرن 9 ق.م)',
+        material: 'بلاطات حجرية مربعة غير منتظمة',
+        desc: 'تشكل الساحة الكبرى القلب المعماري الموزع لحركة المواكب بين قاعة العرش شمالاً والأجنحة الملكية والخدمية جنوباً وشرقاً، وتتميز بتبليطها الحجري المتدرج الذي صُمم لتصريف المياه وتحمل الحركة.',
+        target: new THREE.Vector3(-6.0, 1.5, -282.0),
+        camPos: new THREE.Vector3(-18.0, 5.2, -268.0),
+        walkPos: new THREE.Vector3(-6.0, 0.55, -278.0),
+        walkYaw: 0
+      },
+      {
+        id: 'skylights_roof',
+        num: 8,
+        shortTitle: 'السقوف والمناور',
+        title: 'منظومة السقوف الوقائية والمناور الزجاجية المفتوحة',
+        en: 'Protective Shelter & Open Skylights System',
+        category: 'هندسة الحفاظ المعماري الحديث',
+        era: 'تصميم الحفاظ المعماري المعاصر',
+        material: 'هياكل فولاذية + زجاج منخفض الحديد + ألواح واقية',
+        desc: 'تغطي أروقة القصر منظومة هندسية حديثة من السقوف الوقائية المزودة بمناور زجاجية مفتوحة (Open Skylights) ومظلات جانبية مائلة تحمي جدران الطابوق اللبن والمنحوتات من الأمطار وأشعة الشمس المباشرة مع توفير تهوية وإضاءة متحفية طبيعية.',
+        target: new THREE.Vector3(-8.0, 6.0, -305.0),
+        camPos: new THREE.Vector3(-38.0, 26.0, -260.0),
+        walkPos: new THREE.Vector3(-5.0, 1.16, -323.0),
+        walkYaw: 0
+      }
+    ];
+
+    // =========================================================================
+    // 2. SCENE, RENDERER, CAMERA & BRIGHT FRONT-LIT PALACE ILLUMINATION
+    // =========================================================================
+    const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || window.innerWidth <= 900;
+    let mobileModeActive = true;
+
+    const btnToggleMobile = document.getElementById('btn-toggle-mobile');
+    function setMobileMode(enabled) {
+      mobileModeActive = enabled;
+      document.body.classList.toggle('mobile-mode', enabled);
+      if (btnToggleMobile) btnToggleMobile.classList.toggle('active', enabled);
+    }
+    setMobileMode(mobileModeActive);
+    btnToggleMobile.addEventListener('click', () => setMobileMode(!mobileModeActive));
+
+    const container = document.getElementById('canvas-container');
+    const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isTouchDevice ? 1.75 : 2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.15;
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    container.appendChild(renderer.domElement);
+
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0xe6ebf0, 0.0009);
+
+    const camera = new THREE.PerspectiveCamera(62, window.innerWidth / window.innerHeight, 0.15, 900);
+
+    const orbitControls = new OrbitControls(camera, renderer.domElement);
+    orbitControls.enableDamping = true;
+    orbitControls.dampingFactor = 0.055;
+    orbitControls.rotateSpeed = 0.75;
+    orbitControls.zoomSpeed = 0.9;
+    orbitControls.panSpeed = 0.8;
+    orbitControls.maxPolarAngle = Math.PI * 0.485;
+    orbitControls.minDistance = 1.5;
+    orbitControls.maxDistance = 180;
+    orbitControls.enabled = false;
+
+    // Physical Sky
+    const sky = new Sky();
+    sky.scale.setScalar(1200);
+    scene.add(sky);
+    const skyUniforms = sky.material.uniforms;
+    skyUniforms['turbidity'].value = 4.2;
+    skyUniforms['rayleigh'].value = 1.25;
+    skyUniforms['mieCoefficient'].value = 0.003;
+    skyUniforms['mieDirectionalG'].value = 0.8;
+
+    // Primary Sun Light (Front-lighting the palace facades from +Z/+X sky)
+    const sunLight = new THREE.DirectionalLight(0xfff9ee, 3.3);
+    sunLight.castShadow = true;
+    const shadowRes = isTouchDevice ? 2048 : 4096;
+    sunLight.shadow.mapSize.width = shadowRes;
+    sunLight.shadow.mapSize.height = shadowRes;
+    sunLight.shadow.camera.near = 5;
+    sunLight.shadow.camera.far = 260;
+    const d = 78;
+    sunLight.shadow.camera.left = -d;
+    sunLight.shadow.camera.right = d;
+    sunLight.shadow.camera.top = d;
+    sunLight.shadow.camera.bottom = -d;
+    sunLight.shadow.bias = -0.0003;
+    sunLight.shadow.normalBias = 0.02;
+    sunLight.target.position.set(-5, 2, -300);
+    scene.add(sunLight);
+    scene.add(sunLight.target);
+
+    // Clean Natural Global Fill
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0xd8cfc2, 1.65);
+    hemiLight.position.set(0, 65, -300);
+    scene.add(hemiLight);
+
+    const ambientFill = new THREE.AmbientLight(0xfffcf7, 0.45);
+    scene.add(ambientFill);
+
+    // Night Museum Accent Lights
+    const nightLightsGroup = new THREE.Group();
+    scene.add(nightLightsGroup);
+    LANDMARKS.slice(0, 6).forEach((lm) => {
+      const pl = new THREE.PointLight(0xffd296, 0, 24, 1.5);
+      pl.position.copy(lm.target).add(new THREE.Vector3(0, 1.2, 2.5));
+      nightLightsGroup.add(pl);
+    });
+
+    // Camera Torch for Relief Inspection
+    const torchLight = new THREE.SpotLight(0xffffff, 0, 28, Math.PI / 4, 0.45, 1.1);
+    torchLight.position.set(0, 0, 0);
+    torchLight.target.position.set(0, 0, -5);
+    camera.add(torchLight);
+    camera.add(torchLight.target);
+    scene.add(camera);
+
+    // 3D Tap-to-Walk Floor Target Indicator (Monochrome Liquid Glass Ring)
+    const tapRingGeo = new THREE.RingGeometry(0.24, 0.36, 36);
+    tapRingGeo.rotateX(-Math.PI / 2);
+    const tapRingMat = new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+      transparent: true,
+      opacity: 0.85,
+      side: THREE.DoubleSide,
+      depthWrite: false
+    });
+    const tapRingMesh = new THREE.Mesh(tapRingGeo, tapRingMat);
+    tapRingMesh.visible = false;
+    scene.add(tapRingMesh);
+
+    function applyLightingPreset(preset) {
+      const sunVec = new THREE.Vector3();
+      if (preset === 'morning') {
+        const phi = THREE.MathUtils.degToRad(90 - 44);
+        const theta = THREE.MathUtils.degToRad(32);
+        sunVec.setFromSphericalCoords(1, phi, theta);
+        sunLight.color.setHex(0xfff7e8);
+        sunLight.intensity = 3.3;
+        hemiLight.color.setHex(0xffffff);
+        hemiLight.groundColor.setHex(0xd8cfc2);
+        hemiLight.intensity = 1.65;
+        ambientFill.intensity = 0.45;
+        scene.fog.color.setHex(0xe6ebf0);
+        scene.fog.density = 0.0009;
+        renderer.toneMappingExposure = 1.15;
+        nightLightsGroup.children.forEach(l => l.intensity = 0);
+      } else if (preset === 'noon') {
+        const phi = THREE.MathUtils.degToRad(90 - 68);
+        const theta = THREE.MathUtils.degToRad(15);
+        sunVec.setFromSphericalCoords(1, phi, theta);
+        sunLight.color.setHex(0xffffff);
+        sunLight.intensity = 3.6;
+        hemiLight.color.setHex(0xffffff);
+        hemiLight.groundColor.setHex(0xe0d8cc);
+        hemiLight.intensity = 1.85;
+        ambientFill.intensity = 0.55;
+        scene.fog.color.setHex(0xedf2f7);
+        scene.fog.density = 0.0006;
+        renderer.toneMappingExposure = 1.18;
+        nightLightsGroup.children.forEach(l => l.intensity = 0);
+      } else if (preset === 'sunset') {
+        const phi = THREE.MathUtils.degToRad(90 - 18);
+        const theta = THREE.MathUtils.degToRad(-48);
+        sunVec.setFromSphericalCoords(1, phi, theta);
+        sunLight.color.setHex(0xffb078);
+        sunLight.intensity = 2.8;
+        hemiLight.color.setHex(0xffe0c8);
+        hemiLight.groundColor.setHex(0x8c7a6b);
+        hemiLight.intensity = 1.25;
+        ambientFill.intensity = 0.35;
+        scene.fog.color.setHex(0xd8c3b4);
+        scene.fog.density = 0.0014;
+        renderer.toneMappingExposure = 1.08;
+        nightLightsGroup.children.forEach(l => l.intensity = 1.4);
+      } else if (preset === 'night') {
+        const phi = THREE.MathUtils.degToRad(90 - (-10));
+        const theta = THREE.MathUtils.degToRad(0);
+        sunVec.setFromSphericalCoords(1, phi, theta);
+        sunLight.color.setHex(0x88aaff);
+        sunLight.intensity = 0.4;
+        hemiLight.color.setHex(0x3a4968);
+        hemiLight.groundColor.setHex(0x222228);
+        hemiLight.intensity = 0.7;
+        ambientFill.intensity = 0.25;
+        scene.fog.color.setHex(0x0d1017);
+        scene.fog.density = 0.0022;
+        renderer.toneMappingExposure = 1.05;
+        nightLightsGroup.children.forEach(l => l.intensity = 4.8);
+      }
+
+      skyUniforms['sunPosition'].value.copy(sunVec);
+      sunLight.position.copy(sunLight.target.position).addScaledVector(sunVec, 115);
+    }
+
+    applyLightingPreset('morning');
+
+    // =========================================================================
+    // 3. SOLID COLLISION ENGINE (SPATIAL WALL & SCAN GRID + BARYCENTRIC FLOOR)
+    // =========================================================================
+    const roofMeshes = [];
+    const walkableMeshes = [];
+    const wallSegmentsGrid = new Map();
+    const floorTrisGrid = new Map();
+    const scanOccupiedCells = new Set();
+    const GRID_CELL_SIZE = 2.5;
+    const PLAYER_RADIUS = 0.48;
+    const PLAYER_EYE_HEIGHT = 1.70;
+
+    function getCellKey(cx, cz) {
+      return `${cx},${cz}`;
+    }
+
+    function addSegmentToGrid(ax, az, bx, bz, minY, maxY) {
+      const seg = { ax, az, bx, bz, minY, maxY };
+      const minX = Math.min(ax, bx) - PLAYER_RADIUS;
+      const maxX = Math.max(ax, bx) + PLAYER_RADIUS;
+      const minZ = Math.min(az, bz) - PLAYER_RADIUS;
+      const maxZ = Math.max(az, bz) + PLAYER_RADIUS;
+
+      const cMinX = Math.floor(minX / GRID_CELL_SIZE);
+      const cMaxX = Math.floor(maxX / GRID_CELL_SIZE);
+      const cMinZ = Math.floor(minZ / GRID_CELL_SIZE);
+      const cMaxZ = Math.floor(maxZ / GRID_CELL_SIZE);
+
+      for (let cx = cMinX; cx <= cMaxX; cx++) {
+        for (let cz = cMinZ; cz <= cMaxZ; cz++) {
+          const key = getCellKey(cx, cz);
+          let bucket = wallSegmentsGrid.get(key);
+          if (!bucket) {
+            bucket = [];
+            wallSegmentsGrid.set(key, bucket);
+          }
+          bucket.push(seg);
+        }
+      }
+    }
+
+    function insertWallTriangle(v0, v1, v2, isDenseScan) {
+      const minY = Math.min(v0.y, v1.y, v2.y);
+      const maxY = Math.max(v0.y, v1.y, v2.y);
+      if (maxY < 1.28 || minY > 4.2) return;
+
+      if (isDenseScan) {
+        const mx = (v0.x + v1.x + v2.x) / 3;
+        const mz = (v0.z + v1.z + v2.z) / 3;
+        const qx = Math.round(mx / 0.20);
+        const qz = Math.round(mz / 0.20);
+        const qKey = `${qx},${qz}`;
+        if (scanOccupiedCells.has(qKey)) return;
+        scanOccupiedCells.add(qKey);
+        const px = qx * 0.20;
+        const pz = qz * 0.20;
+        addSegmentToGrid(px - 0.08, pz, px + 0.08, pz, 0.4, 3.6);
+        return;
+      }
+
+      const pairs = [[v0, v1], [v1, v2], [v2, v0]];
+      for (let i = 0; i < 3; i++) {
+        const a = pairs[i][0];
+        const b = pairs[i][1];
+        const dx = b.x - a.x;
+        const dz = b.z - a.z;
+        const lenSq = dx * dx + dz * dz;
+        if (lenSq < 0.015) continue;
+        addSegmentToGrid(a.x, a.z, b.x, b.z, minY, maxY);
+      }
+    }
+
+    function insertFloorTriangle(v0, v1, v2) {
+      const minY = Math.min(v0.y, v1.y, v2.y);
+      const maxY = Math.max(v0.y, v1.y, v2.y);
+      if (maxY < -0.5 || minY > 2.4) return;
+
+      const minX = Math.min(v0.x, v1.x, v2.x);
+      const maxX = Math.max(v0.x, v1.x, v2.x);
+      const minZ = Math.min(v0.z, v1.z, v2.z);
+      const maxZ = Math.max(v0.z, v1.z, v2.z);
+
+      if (maxX - minX > 250 || maxZ - minZ > 250) return;
+
+      const tri = {
+        ax: v0.x, ay: v0.y, az: v0.z,
+        bx: v1.x, by: v1.y, bz: v1.z,
+        cx: v2.x, cy: v2.y, cz: v2.z
+      };
+
+      const cMinX = Math.floor(minX / GRID_CELL_SIZE);
+      const cMaxX = Math.floor(maxX / GRID_CELL_SIZE);
+      const cMinZ = Math.floor(minZ / GRID_CELL_SIZE);
+      const cMaxZ = Math.floor(maxZ / GRID_CELL_SIZE);
+
+      for (let cx = cMinX; cx <= cMaxX; cx++) {
+        for (let cz = cMinZ; cz <= cMaxZ; cz++) {
+          const key = getCellKey(cx, cz);
+          let bucket = floorTrisGrid.get(key);
+          if (!bucket) {
+            bucket = [];
+            floorTrisGrid.set(key, bucket);
+          }
+          bucket.push(tri);
+        }
+      }
+    }
+
+    function buildCollisionIndex(root) {
+      const v0 = new THREE.Vector3();
+      const v1 = new THREE.Vector3();
+      const v2 = new THREE.Vector3();
+      const e1 = new THREE.Vector3();
+      const e2 = new THREE.Vector3();
+      const norm = new THREE.Vector3();
+
+      root.updateMatrixWorld(true);
+
+      root.traverse((child) => {
+        if (!child.isMesh || !child.geometry) return;
+        const name = child.name || '';
+
+        if (
+          name.includes('ROOF') ||
+          name.includes('roof') ||
+          name.includes('سقف') ||
+          name.includes('Sloped hood') ||
+          name.includes('Gate shelter') ||
+          name.includes('Orange ') ||
+          name.includes('Shelter |') ||
+          name.includes('BEAM_') ||
+          name.includes('Lower concrete') ||
+          name.includes('Square window') ||
+          name.includes('gallery | shallow barrel')
+        ) {
+          roofMeshes.push(child);
+        }
+
+        if (name === 'Plane.001' || name.startsWith('WILD_FLOWER') || name.includes('Sparse dry tufts')) {
+          return;
+        }
+
+        const geom = child.geometry;
+        const posAttr = geom.attributes.position;
+        if (!posAttr) return;
+        const indexAttr = geom.index;
+        const mw = child.matrixWorld;
+        const triCount = indexAttr ? (indexAttr.count / 3) : (posAttr.count / 3);
+        const isDenseScan = (triCount > 8000 && !name.includes('paving') && !name.includes('footprint') && !name.includes('Excavation'));
+
+        if (!isDenseScan && (name.includes('Plane') || name.includes('paving') || name.includes('footprint') || name.includes('Floor') || name.includes('threshold'))) {
+          walkableMeshes.push(child);
+        }
+
+        for (let t = 0; t < triCount; t++) {
+          const i0 = indexAttr ? indexAttr.getX(t * 3 + 0) : (t * 3 + 0);
+          const i1 = indexAttr ? indexAttr.getX(t * 3 + 1) : (t * 3 + 1);
+          const i2 = indexAttr ? indexAttr.getX(t * 3 + 2) : (t * 3 + 2);
+
+          v0.fromBufferAttribute(posAttr, i0).applyMatrix4(mw);
+          v1.fromBufferAttribute(posAttr, i1).applyMatrix4(mw);
+          v2.fromBufferAttribute(posAttr, i2).applyMatrix4(mw);
+
+          e1.subVectors(v1, v0);
+          e2.subVectors(v2, v0);
+          norm.crossVectors(e1, e2).normalize();
+
+          if (Math.abs(norm.y) < 0.55) {
+            insertWallTriangle(v0, v1, v2, isDenseScan);
+          } else if (norm.y > 0.55 && !isDenseScan) {
+            insertFloorTriangle(v0, v1, v2);
+          }
+        }
+      });
+    }
+
+    function resolveHorizontalCollision(pos, feetY) {
+      const torsoMinY = feetY + 0.80;
+      const torsoMaxY = feetY + 1.65;
+      const rSq = PLAYER_RADIUS * PLAYER_RADIUS;
+
+      for (let iter = 0; iter < 3; iter++) {
+        const cx = Math.floor(pos.x / GRID_CELL_SIZE);
+        const cz = Math.floor(pos.z / GRID_CELL_SIZE);
+        const bucket = wallSegmentsGrid.get(getCellKey(cx, cz));
+        if (!bucket) break;
+
+        for (let i = 0; i < bucket.length; i++) {
+          const seg = bucket[i];
+          if (seg.maxY < torsoMinY || seg.minY > torsoMaxY) continue;
+
+          const abx = seg.bx - seg.ax;
+          const abz = seg.bz - seg.az;
+          const apx = pos.x - seg.ax;
+          const apz = pos.z - seg.az;
+          const abLenSq = abx * abx + abz * abz;
+          let t = abLenSq > 1e-6 ? ((apx * abx + apz * abz) / abLenSq) : 0;
+          if (t < 0) t = 0;
+          else if (t > 1) t = 1;
+
+          const closestX = seg.ax + t * abx;
+          const closestZ = seg.az + t * abz;
+          const dx = pos.x - closestX;
+          const dz = pos.z - closestZ;
+          const distSq = dx * dx + dz * dz;
+
+          if (distSq < rSq && distSq > 1e-8) {
+            const dist = Math.sqrt(distSq);
+            const overlap = PLAYER_RADIUS - dist;
+            pos.x += (dx / dist) * overlap;
+            pos.z += (dz / dist) * overlap;
+          }
+        }
+      }
+
+      pos.x = THREE.MathUtils.clamp(pos.x, -72, 70);
+      pos.z = THREE.MathUtils.clamp(pos.z, -390, -148);
+    }
+
+    function sampleFloorHeight(x, z, currentFeetY) {
+      const cx = Math.floor(x / GRID_CELL_SIZE);
+      const cz = Math.floor(z / GRID_CELL_SIZE);
+      const bucket = floorTrisGrid.get(getCellKey(cx, cz));
+      if (!bucket) return null;
+
+      let bestY = null;
+      for (let i = 0; i < bucket.length; i++) {
+        const t = bucket[i];
+        const v0x = t.cx - t.ax;
+        const v0z = t.cz - t.az;
+        const v1x = t.bx - t.ax;
+        const v1z = t.bz - t.az;
+        const v2x = x - t.ax;
+        const v2z = z - t.az;
+
+        const dot00 = v0x * v0x + v0z * v0z;
+        const dot01 = v0x * v1x + v0z * v1z;
+        const dot02 = v0x * v2x + v0z * v2z;
+        const dot11 = v1x * v1x + v1z * v1z;
+        const dot12 = v1x * v2x + v1z * v2z;
+
+        const denom = dot00 * dot11 - dot01 * dot01;
+        if (Math.abs(denom) < 1e-8) continue;
+        const invDenom = 1.0 / denom;
+        const u = (dot11 * dot02 - dot01 * dot12) * invDenom;
+        const v = (dot00 * dot12 - dot01 * dot02) * invDenom;
+
+        if (u >= -0.02 && v >= -0.02 && (u + v) <= 1.02) {
+          const y = t.ay + v * (t.by - t.ay) + u * (t.cy - t.ay);
+          if (y <= currentFeetY + 0.88 && (bestY === null || y > bestY)) {
+            bestY = y;
+          }
+        }
+      }
+      return bestY;
+    }
+
+    // =========================================================================
+    // 4. LOAD NIMRUD_ROOFS_OPEN.GLB & ENHANCE PBR MATERIALS
+    // =========================================================================
+    const loadingScreen = document.getElementById('loading-screen');
+    const progressBarFill = document.getElementById('progress-bar-fill');
+    const loadingStatus = document.getElementById('loading-status');
+
+    const dracoLoader = new DRACOLoader();
+    dracoLoader.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/libs/draco/gltf/');
+
+    const gltfLoader = new GLTFLoader();
+    gltfLoader.setDRACOLoader(dracoLoader);
+
+    const maxAniso = renderer.capabilities.getMaxAnisotropy();
+    const allSceneMaterials = [];
+
+    gltfLoader.load(
+      './Nimrud_Roofs_Open.glb',
+      (gltf) => {
+        const model = gltf.scene;
+
+        model.traverse((child) => {
+          if (child.isMesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+
+            const mats = Array.isArray(child.material) ? child.material : [child.material];
+            mats.forEach((mat) => {
+              if (!mat) return;
+              if (!allSceneMaterials.includes(mat)) allSceneMaterials.push(mat);
+              if (mat.map) {
+                mat.map.anisotropy = maxAniso;
+                if (!mat.bumpMap && !mat.transparent) {
+                  mat.bumpMap = mat.map;
+                  mat.bumpScale = 0.016;
+                }
+              }
+              if (mat.transparent || (mat.name && mat.name.includes('glazing'))) {
+                mat.opacity = 0.26;
+                mat.roughness = 0.08;
+                mat.metalness = 0.1;
+                mat.depthWrite = false;
+              }
+            });
+          }
+        });
+
+        scene.add(model);
+
+        loadingStatus.textContent = 'جاري تجهيز التجربة...';
+        setTimeout(() => {
+          buildCollisionIndex(model);
+          initHotspotsUI();
+          teleportWalkToLandmark(LANDMARKS[0]);
+          loadingScreen.classList.add('hidden');
+        }, 50);
+      },
+      (xhr) => {
+        if (xhr.total > 0) {
+          const pct = Math.min(100, Math.round((xhr.loaded / xhr.total) * 100));
+          progressBarFill.style.width = `${pct}%`;
+          loadingStatus.textContent = `جاري التحميل (${pct}%)...`;
+        }
+      },
+      (err) => {
+        console.error('GLB Load Error:', err);
+        loadingStatus.textContent = 'تعذر تحميل الملف.';
+      }
+    );
+
+    // =========================================================================
+    // 5. ULTRA-SMOOTH DAMPED WALK CONTROLLER & CAMERA MODES
+    // =========================================================================
+    let currentMode = 'walk'; // 'walk' | 'aerial' | 'tour'
+    const playerFeet = new THREE.Vector3(-24.5, 1.12, -322.0);
+    let playerVelX = 0;
+    let playerVelZ = 0;
+    let playerVelY = 0;
+    let isGrounded = true;
+
+    // Smooth Damped Look Angles + Inertia
+    let yaw = 0;
+    let pitch = 0.04;
+    let targetYaw = 0;
+    let targetPitch = 0.04;
+    let inertiaYaw = 0;
+    let inertiaPitch = 0;
+    let walkBobTimer = 0;
+    let autoWalkTarget = null;
+
+    let flyAnim = null;
+    let tourIndex = 0;
+    let tourTimer = 0;
+    let currentLandmarkIndex = 0;
+
+    const keys = { forward: false, backward: false, left: false, right: false, sprint: false };
+    let joyMoveX = 0;
+    let joyMoveY = 0;
+    let joyAutoSprint = false;
+    let isMouseDragging = false;
+    let prevMouseX = 0;
+    let prevMouseY = 0;
+
+    let audioCtx = null;
+    let lastStepTime = 0;
+    function playFootstepSound() {
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const now = audioCtx.currentTime;
+        const bufferSize = audioCtx.sampleRate * 0.05;
+        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.25));
+        }
+        const noise = audioCtx.createBufferSource();
+        noise.buffer = buffer;
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.value = 250 + Math.random() * 80;
+        filter.Q.value = 1.8;
+        const gain = audioCtx.createGain();
+        gain.gain.setValueAtTime(0.055, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+        noise.connect(filter);
+        filter.connect(gain);
+        gain.connect(audioCtx.destination);
+        noise.start(now);
+      } catch (e) {}
+    }
+
+    const landmarksBar = document.getElementById('landmarks-bar');
+    const mobLandmarkLabel = document.getElementById('mob-landmark-Current');
+
+    function updateMobileLandmarkLabel(lm) {
+      const idx = LANDMARKS.findIndex(item => item.id === lm.id);
+      if (idx !== -1) currentLandmarkIndex = idx;
+      if (mobLandmarkLabel) {
+        mobLandmarkLabel.textContent = `${lm.num}/8 ${lm.shortTitle || lm.title.split('—')[0].trim()}`;
+      }
+    }
+
+    function setMode(newMode) {
+      currentMode = newMode;
+      autoWalkTarget = null;
+      tapRingMesh.visible = false;
+      document.getElementById('btn-mode-walk').classList.toggle('active', newMode === 'walk');
+      document.getElementById('btn-mode-aerial').classList.toggle('active', newMode === 'aerial');
+      document.getElementById('btn-mode-tour').classList.toggle('active', newMode === 'tour');
+      document.getElementById('crosshair').classList.toggle('hidden', newMode !== 'walk');
+      document.getElementById('mobile-controls').classList.toggle('walk-active', newMode === 'walk');
+      document.body.classList.toggle('aerial-active', newMode !== 'walk');
+
+      landmarksBar.classList.toggle('hidden-bar', newMode === 'walk' || !eduPointsOn);
+
+      if (newMode === 'walk') {
+        orbitControls.enabled = false;
+        flyAnim = null;
+      } else if (newMode === 'aerial') {
+        if (document.pointerLockElement) document.exitPointerLock();
+        orbitControls.enabled = true;
+        startCameraFly(
+          new THREE.Vector3(-6, 56, -242),
+          new THREE.Vector3(-4, 2, -302),
+          1.35
+        );
+      } else if (newMode === 'tour') {
+        if (document.pointerLockElement) document.exitPointerLock();
+        orbitControls.enabled = true;
+        tourIndex = 0;
+        tourTimer = 0;
+        focusLandmarkAcademic(LANDMARKS[0]);
+        currentMode = 'tour';
+        document.getElementById('btn-mode-aerial').classList.remove('active');
+        document.getElementById('btn-mode-tour').classList.add('active');
+      }
+    }
+
+    function startCameraFly(destPos, destTarget, duration = 1.25, onComplete = null) {
+      flyAnim = {
+        startPos: camera.position.clone(),
+        startTarget: orbitControls.target.clone(),
+        endPos: destPos.clone(),
+        endTarget: destTarget.clone(),
+        elapsed: 0,
+        duration,
+        onComplete
+      };
+    }
+
+    function focusLandmarkAcademic(lm) {
+      updateMobileLandmarkLabel(lm);
+      if (currentMode === 'walk') {
+        currentMode = 'aerial';
+        document.getElementById('btn-mode-walk').classList.remove('active');
+        document.getElementById('btn-mode-aerial').classList.add('active');
+        document.getElementById('crosshair').classList.add('hidden');
+        document.getElementById('mobile-controls').classList.remove('walk-active');
+        document.body.classList.add('aerial-active');
+        landmarksBar.classList.toggle('hidden-bar', !eduPointsOn);
+        if (document.pointerLockElement) document.exitPointerLock();
+      }
+      orbitControls.enabled = true;
+      showAcademicCard(lm);
+      highlightLandmarkPill(lm.id);
+      startCameraFly(lm.camPos, lm.target, 1.25);
+    }
+
+    function teleportWalkToLandmark(lm) {
+      updateMobileLandmarkLabel(lm);
+      playerFeet.copy(lm.walkPos);
+      const fh = sampleFloorHeight(playerFeet.x, playerFeet.z, playerFeet.y);
+      if (fh !== null) playerFeet.y = fh;
+      playerVelX = 0;
+      playerVelZ = 0;
+      playerVelY = 0;
+      yaw = lm.walkYaw || 0;
+      pitch = 0.04;
+      targetYaw = yaw;
+      targetPitch = pitch;
+      inertiaYaw = 0;
+      inertiaPitch = 0;
+      autoWalkTarget = null;
+      tapRingMesh.visible = false;
+      setMode('walk');
+      highlightLandmarkPill(lm.id);
+    }
+
+    // =========================================================================
+    // 6. UI BINDINGS, EDUCATIONAL POINTS TOGGLE & AUDIO NARRATION
+    // =========================================================================
+    const hotspotsLayer = document.getElementById('hotspots-layer');
+    const hotspotElements = [];
+    let currentLandmark = LANDMARKS[0];
+    let eduPointsOn = true;
+
+    function initHotspotsUI() {
+      LANDMARKS.forEach((lm) => {
+        const marker = document.createElement('div');
+        marker.className = 'hotspot-marker';
+        marker.innerHTML = `
+          <div class="hotspot-pin">${lm.num}</div>
+          <div class="hotspot-label">${lm.shortTitle || lm.title.split('—')[0].trim()}</div>
+        `;
+        marker.addEventListener('click', (e) => {
+          e.stopPropagation();
+          focusLandmarkAcademic(lm);
+        });
+        hotspotsLayer.appendChild(marker);
+        hotspotElements.push({ lm, el: marker });
+
+        const pill = document.createElement('button');
+        pill.className = 'landmark-pill';
+        pill.dataset.id = lm.id;
+        pill.innerHTML = `<span class="pill-num">${lm.num}</span><span>${lm.shortTitle || lm.title.split('—')[0].trim()}</span>`;
+        pill.addEventListener('click', () => focusLandmarkAcademic(lm));
+        landmarksBar.appendChild(pill);
+      });
+    }
+
+    function highlightLandmarkPill(id) {
+      document.querySelectorAll('.landmark-pill').forEach((el) => {
+        el.classList.toggle('active', el.dataset.id === id);
+      });
+    }
+
+    let isNarrating = false;
+    const btnAudioGuide = document.getElementById('btn-audio-guide');
+    function stopAudioGuide() {
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+      isNarrating = false;
+      if (btnAudioGuide) {
+        btnAudioGuide.innerHTML = '🔊 استمع للشرح الصوتي';
+        btnAudioGuide.classList.remove('active');
+      }
+    }
+
+    function toggleAudioGuide() {
+      if (!('speechSynthesis' in window)) return;
+      if (isNarrating) {
+        stopAudioGuide();
+        return;
+      }
+      window.speechSynthesis.cancel();
+      const text = `${currentLandmark.title}. الحقبة التاريخية: ${currentLandmark.era}. المادة: ${currentLandmark.material}. ${currentLandmark.desc}`;
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = 'ar-SA';
+      utter.rate = 0.95;
+      const voices = window.speechSynthesis.getVoices();
+      const arVoice = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('ar'));
+      if (arVoice) utter.voice = arVoice;
+      utter.onend = () => stopAudioGuide();
+      utter.onerror = () => stopAudioGuide();
+      isNarrating = true;
+      btnAudioGuide.innerHTML = '⏹️ إيقاف الصوت';
+      btnAudioGuide.classList.add('active');
+      window.speechSynthesis.speak(utter);
+    }
+
+    btnAudioGuide.addEventListener('click', toggleAudioGuide);
+
+    function showAcademicCard(lm) {
+      currentLandmark = lm;
+      updateMobileLandmarkLabel(lm);
+      document.getElementById('card-category').textContent = lm.category;
+      document.getElementById('card-title').textContent = lm.title;
+      document.getElementById('card-en').textContent = lm.en;
+      document.getElementById('card-era').textContent = lm.era;
+      document.getElementById('card-mat').textContent = lm.material;
+      document.getElementById('card-desc').textContent = lm.desc;
+      document.getElementById('academic-card').classList.remove('collapsed');
+      stopAudioGuide();
+    }
+
+    document.getElementById('btn-close-card').addEventListener('click', () => {
+      stopAudioGuide();
+      document.getElementById('academic-card').classList.add('collapsed');
+    });
+
+    document.getElementById('btn-walk-here').addEventListener('click', () => {
+      stopAudioGuide();
+      document.getElementById('academic-card').classList.add('collapsed');
+      teleportWalkToLandmark(currentLandmark);
+    });
+
+    document.getElementById('btn-aerial-back').addEventListener('click', () => {
+      setMode('aerial');
+    });
+
+    document.getElementById('btn-mode-walk').addEventListener('click', () => setMode('walk'));
+    document.getElementById('btn-mode-aerial').addEventListener('click', () => setMode('aerial'));
+    document.getElementById('btn-mode-tour').addEventListener('click', () => setMode('tour'));
+
+    // Direct Show/Hide Toggle for Educational Points
+    const btnToggleEdu = document.getElementById('btn-toggle-edu');
+    const mobEduBtn = document.getElementById('mob-edu');
+    function toggleEduPoints() {
+      eduPointsOn = !eduPointsOn;
+      btnToggleEdu.classList.toggle('active', eduPointsOn);
+      if (mobEduBtn) mobEduBtn.classList.toggle('active', eduPointsOn);
+      hotspotsLayer.classList.toggle('edu-hidden', !eduPointsOn);
+      landmarksBar.classList.toggle('hidden-bar', currentMode === 'walk' || !eduPointsOn);
+      if (!eduPointsOn) {
+        stopAudioGuide();
+        document.getElementById('academic-card').classList.add('collapsed');
+      }
+    }
+    btnToggleEdu.addEventListener('click', toggleEduPoints);
+    if (mobEduBtn) {
+      mobEduBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        toggleEduPoints();
+      });
+    }
+
+    // Minimap Toggle
+    const minimapBox = document.getElementById('minimap-box');
+    const btnToggleMap = document.getElementById('btn-toggle-map');
+    function toggleMinimap() {
+      const hidden = minimapBox.classList.toggle('hidden');
+      btnToggleMap.classList.toggle('active', !hidden);
+    }
+    btnToggleMap.addEventListener('click', toggleMinimap);
+
+    // Roof Cutaway Toggle
+    let roofsHidden = false;
+    const btnCutaway = document.getElementById('btn-cutaway');
+    btnCutaway.addEventListener('click', () => {
+      roofsHidden = !roofsHidden;
+      btnCutaway.classList.toggle('active', roofsHidden);
+      roofMeshes.forEach((m) => {
+        m.visible = !roofsHidden;
+      });
+    });
+
+    // Torch Toggle
+    let torchOn = false;
+    const btnTorch = document.getElementById('btn-torch');
+    const mobTorchBtn = document.getElementById('mob-torch');
+    function toggleTorch() {
+      torchOn = !torchOn;
+      torchLight.intensity = torchOn ? 5.5 : 0;
+      btnTorch.classList.toggle('active', torchOn);
+      if (mobTorchBtn) mobTorchBtn.classList.toggle('active', torchOn);
+    }
+    btnTorch.addEventListener('click', toggleTorch);
+    if (mobTorchBtn) {
+      mobTorchBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        toggleTorch();
+      });
+    }
+
+    // Analysis Mode Selector
+    document.getElementById('select-analysis').addEventListener('change', (e) => {
+      const mode = e.target.value;
+      allSceneMaterials.forEach((mat) => {
+        if (mat.transparent) return;
+        if (mode === 'realistic') {
+          mat.wireframe = false;
+          if (mat.bumpMap) mat.bumpScale = 0.016;
+        } else if (mode === 'relief') {
+          mat.wireframe = false;
+          if (mat.bumpMap) mat.bumpScale = 0.085;
+        } else if (mode === 'wireframe') {
+          mat.wireframe = true;
+        }
+        mat.needsUpdate = true;
+      });
+      if (mode === 'relief' && !torchOn) toggleTorch();
+    });
+
+    // Lighting Selector
+    document.getElementById('select-lighting').addEventListener('change', (e) => {
+      applyLightingPreset(e.target.value);
+    });
+
+    // Clean HUD Toggle
+    document.getElementById('btn-clean-hud').addEventListener('click', () => {
+      document.body.classList.add('clean-hud');
+    });
+    document.getElementById('restore-hud-btn').addEventListener('click', () => {
+      document.body.classList.remove('clean-hud');
+    });
+
+    // Mobile Quick Landmark Stepper
+    document.getElementById('mob-prev-lm').addEventListener('click', (e) => {
+      e.stopPropagation();
+      currentLandmarkIndex = (currentLandmarkIndex - 1 + LANDMARKS.length) % LANDMARKS.length;
+      teleportWalkToLandmark(LANDMARKS[currentLandmarkIndex]);
+    });
+    document.getElementById('mob-next-lm').addEventListener('click', (e) => {
+      e.stopPropagation();
+      currentLandmarkIndex = (currentLandmarkIndex + 1) % LANDMARKS.length;
+      teleportWalkToLandmark(LANDMARKS[currentLandmarkIndex]);
+    });
+    mobLandmarkLabel.addEventListener('click', (e) => {
+      e.stopPropagation();
+      showAcademicCard(LANDMARKS[currentLandmarkIndex]);
+    });
+
+    // =========================================================================
+    // 7. KEYBOARD, MOUSE & ULTRA-SMOOTH MOBILE TOUCH CONTROLLER
+    // =========================================================================
+    window.addEventListener('keydown', (e) => {
+      switch (e.code) {
+        case 'KeyW':
+        case 'ArrowUp':
+          keys.forward = true;
+          autoWalkTarget = null;
+          tapRingMesh.visible = false;
+          break;
+        case 'KeyS':
+        case 'ArrowDown':
+          keys.backward = true;
+          autoWalkTarget = null;
+          tapRingMesh.visible = false;
+          break;
+        case 'KeyA':
+        case 'ArrowLeft':
+          keys.left = true;
+          autoWalkTarget = null;
+          tapRingMesh.visible = false;
+          break;
+        case 'KeyD':
+        case 'ArrowRight':
+          keys.right = true;
+          autoWalkTarget = null;
+          tapRingMesh.visible = false;
+          break;
+        case 'ShiftLeft':
+        case 'ShiftRight':
+          keys.sprint = true;
+          break;
+        case 'Space':
+          if (currentMode === 'walk' && isGrounded) {
+            playerVelY = 4.6;
+            isGrounded = false;
+          }
+          break;
+        case 'Digit1':
+          setMode('walk');
+          break;
+        case 'Digit2':
+          setMode('aerial');
+          break;
+        case 'Digit3':
+          setMode('tour');
+          break;
+        case 'KeyF':
+          toggleTorch();
+          break;
+        case 'KeyH':
+          toggleEduPoints();
+          break;
+        case 'KeyM':
+          toggleMinimap();
+          break;
+        case 'Tab':
+          e.preventDefault();
+          document.body.classList.toggle('clean-hud');
+          break;
+      }
+    });
+
+    window.addEventListener('keyup', (e) => {
+      switch (e.code) {
+        case 'KeyW':
+        case 'ArrowUp':
+          keys.forward = false;
+          break;
+        case 'KeyS':
+        case 'ArrowDown':
+          keys.backward = false;
+          break;
+        case 'KeyA':
+        case 'ArrowLeft':
+          keys.left = false;
+          break;
+        case 'KeyD':
+        case 'ArrowRight':
+          keys.right = false;
+          break;
+        case 'ShiftLeft':
+        case 'ShiftRight':
+          keys.sprint = false;
+          break;
+      }
+    });
+
+    // Raycaster for One-Tap Floor Walking
+    const floorRaycaster = new THREE.Raycaster();
+    const pointerNdc = new THREE.Vector2();
+    let pointerDownTime = 0;
+    let pointerDownPos = { x: 0, y: 0 };
+
+    function tryTapFloorWalk(clientX, clientY) {
+      if (currentMode !== 'walk' || walkableMeshes.length === 0) return;
+      pointerNdc.x = (clientX / window.innerWidth) * 2 - 1;
+      pointerNdc.y = -(clientY / window.innerHeight) * 2 + 1;
+      floorRaycaster.setFromCamera(pointerNdc, camera);
+      const hits = floorRaycaster.intersectObjects(walkableMeshes, false);
+      if (hits.length > 0) {
+        const hit = hits[0];
+        if (hit.distance > 1.0 && hit.distance < 38.0 && hit.point.y < playerFeet.y + 1.2) {
+          autoWalkTarget = hit.point.clone();
+          tapRingMesh.position.set(hit.point.x, hit.point.y + 0.04, hit.point.z);
+          tapRingMesh.visible = true;
+        }
+      }
+    }
+
+    renderer.domElement.addEventListener('mousedown', (e) => {
+      if (currentMode !== 'walk') return;
+      isMouseDragging = true;
+      prevMouseX = e.clientX;
+      prevMouseY = e.clientY;
+      pointerDownTime = performance.now();
+      pointerDownPos.x = e.clientX;
+      pointerDownPos.y = e.clientY;
+      inertiaYaw = 0;
+      inertiaPitch = 0;
+    });
+
+    window.addEventListener('mouseup', (e) => {
+      if (isMouseDragging && currentMode === 'walk') {
+        const elapsedTap = performance.now() - pointerDownTime;
+        const moveDist = Math.hypot(e.clientX - pointerDownPos.x, e.clientY - pointerDownPos.y);
+        if (elapsedTap < 210 && moveDist < 8 && mobileModeActive) {
+          tryTapFloorWalk(e.clientX, e.clientY);
+        }
+      }
+      isMouseDragging = false;
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (currentMode !== 'walk') return;
+      if (document.pointerLockElement === renderer.domElement) {
+        targetYaw -= e.movementX * 0.0022;
+        targetPitch = THREE.MathUtils.clamp(targetPitch - e.movementY * 0.0022, -Math.PI * 0.43, Math.PI * 0.43);
+      } else if (isMouseDragging) {
+        const dx = e.clientX - prevMouseX;
+        const dy = e.clientY - prevMouseY;
+        prevMouseX = e.clientX;
+        prevMouseY = e.clientY;
+        const deltaYaw = -dx * 0.0032;
+        const deltaPitch = -dy * 0.0032;
+        targetYaw += deltaYaw;
+        targetPitch = THREE.MathUtils.clamp(targetPitch + deltaPitch, -Math.PI * 0.43, Math.PI * 0.43);
+        inertiaYaw = deltaYaw * 16;
+        inertiaPitch = deltaPitch * 16;
+      }
+    });
+
+    renderer.domElement.addEventListener('dblclick', (e) => {
+      if (currentMode === 'walk') {
+        if (mobileModeActive) {
+          tryTapFloorWalk(e.clientX, e.clientY);
+        } else if (renderer.domElement.requestPointerLock) {
+          renderer.domElement.requestPointerLock();
+        }
+      }
+    });
+
+    // =========================================================================
+    // ANALOG THUMBSTICK (WORKS WITH BOTH TOUCH & MOUSE DRAG!)
+    // =========================================================================
+    const joyZone = document.getElementById('joystick-zone');
+    const joyKnob = document.getElementById('joystick-knob');
+    let joyTouchId = null;
+    let joyMouseActive = false;
+    const maxJoyRadius = 42;
+
+    function updateJoystickFromClient(clientX, clientY) {
+      const rect = joyZone.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      let dx = clientX - cx;
+      let dy = clientY - cy;
+      const dist = Math.hypot(dx, dy);
+      const normDist = Math.min(1, dist / maxJoyRadius);
+
+      if (dist > maxJoyRadius) {
+        dx = (dx / dist) * maxJoyRadius;
+        dy = (dy / dist) * maxJoyRadius;
+      }
+      joyKnob.style.transform = `translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px)`;
+
+      // Deadzone & smooth non-linear response curve for ultra-fine slow walking + fast push
+      if (normDist < 0.08) {
+        joyMoveX = 0;
+        joyMoveY = 0;
+        joyAutoSprint = false;
+      } else {
+        const curved = Math.pow((normDist - 0.08) / 0.92, 1.25);
+        const angle = Math.atan2(dy, dx);
+        joyMoveX = Math.cos(angle) * curved;
+        joyMoveY = -Math.sin(angle) * curved;
+        joyAutoSprint = (normDist > 0.85 && joyMoveY > 0.55);
+      }
+      joyZone.classList.toggle('sprinting', joyAutoSprint || keys.sprint);
+      autoWalkTarget = null;
+      tapRingMesh.visible = false;
+    }
+
+    function resetJoystick() {
+      joyTouchId = null;
+      joyMouseActive = false;
+      joyMoveX = 0;
+      joyMoveY = 0;
+      joyAutoSprint = false;
+      joyKnob.style.transform = `translate(0px, 0px)`;
+      joyZone.classList.toggle('sprinting', keys.sprint);
+    }
+
+    joyZone.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const touch = e.changedTouches[0];
+      joyTouchId = touch.identifier;
+      updateJoystickFromClient(touch.clientX, touch.clientY);
+    }, { passive: false });
+
+    joyZone.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      for (let i = 0; i < e.changedTouches.length; i++) {
+        if (e.changedTouches[i].identifier === joyTouchId) {
+          updateJoystickFromClient(e.changedTouches[i].clientX, e.changedTouches[i].clientY);
+          break;
+        }
+      }
+    }, { passive: false });
+
+    joyZone.addEventListener('touchend', resetJoystick);
+    joyZone.addEventListener('touchcancel', resetJoystick);
+
+    // Also allow mouse dragging on the joystick so user can test on laptop/PC!
+    joyZone.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      joyMouseActive = true;
+      updateJoystickFromClient(e.clientX, e.clientY);
+    });
+    window.addEventListener('mousemove', (e) => {
+      if (joyMouseActive) {
+        updateJoystickFromClient(e.clientX, e.clientY);
+      }
+    });
+    window.addEventListener('mouseup', () => {
+      if (joyMouseActive) resetJoystick();
+    });
+
+    // =========================================================================
+    // SILKY-SMOOTH MOBILE 360° TOUCH-LOOK + INERTIA + TAP-TO-WALK + PINCH ZOOM
+    // =========================================================================
+    let lookTouchId = null;
+    let lastLookX = 0;
+    let lastLookY = 0;
+    let touchStartTime = 0;
+    let touchStartPos = { x: 0, y: 0 };
+    let initialPinchDist = null;
+    let initialFov = 62;
+
+    renderer.domElement.addEventListener('touchstart', (e) => {
+      if (currentMode !== 'walk') return;
+
+      if (e.touches.length === 2) {
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        initialPinchDist = Math.hypot(dx, dy);
+        initialFov = camera.fov;
+        return;
+      }
+
+      for (let i = 0; i < e.changedTouches.length; i++) {
+        const t = e.changedTouches[i];
+        if (t.identifier === joyTouchId) continue;
+        if (lookTouchId === null) {
+          lookTouchId = t.identifier;
+          lastLookX = t.clientX;
+          lastLookY = t.clientY;
+          touchStartTime = performance.now();
+          touchStartPos.x = t.clientX;
+          touchStartPos.y = t.clientY;
+          inertiaYaw = 0;
+          inertiaPitch = 0;
+          break;
+        }
+      }
+    }, { passive: true });
+
+    renderer.domElement.addEventListener('touchmove', (e) => {
+      if (currentMode !== 'walk') return;
+
+      if (e.touches.length === 2 && initialPinchDist !== null) {
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        const dist = Math.hypot(dx, dy);
+        const scale = initialPinchDist / Math.max(20, dist);
+        camera.fov = THREE.MathUtils.clamp(initialFov * scale, 34, 72);
+        camera.updateProjectionMatrix();
+        return;
+      }
+
+      if (lookTouchId === null) return;
+      for (let i = 0; i < e.changedTouches.length; i++) {
+        const t = e.changedTouches[i];
+        if (t.identifier === lookTouchId) {
+          const dx = t.clientX - lastLookX;
+          const dy = t.clientY - lastLookY;
+          lastLookX = t.clientX;
+          lastLookY = t.clientY;
+          const dYaw = -dx * 0.0042;
+          const dPitch = -dy * 0.0038;
+          targetYaw += dYaw;
+          targetPitch = THREE.MathUtils.clamp(targetPitch + dPitch, -Math.PI * 0.42, Math.PI * 0.42);
+          inertiaYaw = dYaw * 18;
+          inertiaPitch = dPitch * 18;
+          break;
+        }
+      }
+    }, { passive: true });
+
+    window.addEventListener('touchend', (e) => {
+      if (e.touches.length < 2) initialPinchDist = null;
+      for (let i = 0; i < e.changedTouches.length; i++) {
+        const t = e.changedTouches[i];
+        if (t.identifier === lookTouchId) {
+          const dtTap = performance.now() - touchStartTime;
+          const moveDist = Math.hypot(t.clientX - touchStartPos.x, t.clientY - touchStartPos.y);
+          if (dtTap < 220 && moveDist < 12) {
+            tryTapFloorWalk(t.clientX, t.clientY);
+          }
+          lookTouchId = null;
+        }
+      }
+    });
+
+    const mobSprintBtn = document.getElementById('mob-sprint');
+    mobSprintBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      keys.sprint = !keys.sprint;
+      mobSprintBtn.classList.toggle('active', keys.sprint);
+      joyZone.classList.toggle('sprinting', keys.sprint || joyAutoSprint);
+    });
+
+    document.getElementById('mob-aerial').addEventListener('click', (e) => {
+      e.preventDefault();
+      setMode(currentMode === 'walk' ? 'aerial' : 'walk');
+    });
+
+    // =========================================================================
+    // 8. LIVE MONOCHROME ARCHITECTURAL MINIMAP
+    // =========================================================================
+    const minimapCanvas = document.getElementById('minimap-canvas');
+    const mCtx = minimapCanvas.getContext('2d');
+    const coordsReadout = document.getElementById('coords-readout');
+
+    function worldToMinimap(wx, wz) {
+      const u = (wx - (-55)) / (50 - (-55));
+      const v = (wz - (-360)) / (-235 - (-360));
+      return {
+        x: THREE.MathUtils.clamp(u * minimapCanvas.width, 8, minimapCanvas.width - 8),
+        y: THREE.MathUtils.clamp(v * minimapCanvas.height, 8, minimapCanvas.height - 8)
+      };
+    }
+
+    minimapCanvas.addEventListener('click', (e) => {
+      const rect = minimapCanvas.getBoundingClientRect();
+      const mx = ((e.clientX - rect.left) / rect.width) * minimapCanvas.width;
+      const my = ((e.clientY - rect.top) / rect.height) * minimapCanvas.height;
+      let bestLm = null;
+      let bestDist = 999;
+      LANDMARKS.forEach((lm) => {
+        const p = worldToMinimap(lm.target.x, lm.target.z);
+        const d = Math.hypot(p.x - mx, p.y - my);
+        if (d < bestDist) {
+          bestDist = d;
+          bestLm = lm;
+        }
+      });
+      if (bestLm && bestDist < 34) {
+        focusLandmarkAcademic(bestLm);
+      }
+    });
+
+    function drawMinimap() {
+      if (minimapBox.classList.contains('hidden')) return;
+      const w = minimapCanvas.width;
+      const h = minimapCanvas.height;
+      mCtx.clearRect(0, 0, w, h);
+
+      mCtx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+      mCtx.lineWidth = 1;
+      for (let g = 25; g < w; g += 25) {
+        mCtx.beginPath(); mCtx.moveTo(g, 0); mCtx.lineTo(g, h); mCtx.stroke();
+        mCtx.beginPath(); mCtx.moveTo(0, g); mCtx.lineTo(w, g); mCtx.stroke();
+      }
+
+      mCtx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+      mCtx.lineWidth = 1.5;
+      const c1 = worldToMinimap(-32, -340);
+      const c2 = worldToMinimap(34, -340);
+      const c4 = worldToMinimap(-32, -250);
+      mCtx.strokeRect(c1.x, c1.y, c2.x - c1.x, c4.y - c1.y);
+
+      LANDMARKS.forEach((lm) => {
+        const p = worldToMinimap(lm.target.x, lm.target.z);
+        mCtx.fillStyle = 'rgba(255, 255, 255, 0.75)';
+        mCtx.beginPath();
+        mCtx.arc(p.x, p.y, 3.5, 0, Math.PI * 2);
+        mCtx.fill();
+      });
+
+      const refPos = currentMode === 'walk' ? playerFeet : camera.position;
+      const pp = worldToMinimap(refPos.x, refPos.z);
+
+      const dirVec = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
+      const angle = Math.atan2(dirVec.z, dirVec.x);
+
+      mCtx.fillStyle = 'rgba(255, 255, 255, 0.22)';
+      mCtx.beginPath();
+      mCtx.moveTo(pp.x, pp.y);
+      mCtx.arc(pp.x, pp.y, 22, angle - 0.45, angle + 0.45);
+      mCtx.closePath();
+      mCtx.fill();
+
+      mCtx.fillStyle = '#ffffff';
+      mCtx.beginPath();
+      mCtx.arc(pp.x, pp.y, 4.5, 0, Math.PI * 2);
+      mCtx.fill();
+
+      coordsReadout.textContent = `${Math.round(refPos.x)}, ${Math.round(-refPos.z)}`;
+    }
+
+    // =========================================================================
+    // 9. MAIN ANIMATION & ULTRA-SMOOTH PHYSICS LOOP
+    // =========================================================================
+    const clock = new THREE.Clock();
+    const forwardVec = new THREE.Vector3();
+    const rightVec = new THREE.Vector3();
+    const desiredMove = new THREE.Vector3();
+    const projVec = new THREE.Vector3();
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const dt = Math.min(clock.getDelta(), 0.05);
+      const elapsed = clock.elapsedTime;
+
+      if (flyAnim) {
+        flyAnim.elapsed += dt;
+        const t = Math.min(1, flyAnim.elapsed / flyAnim.duration);
+        const ease = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        camera.position.lerpVectors(flyAnim.startPos, flyAnim.endPos, ease);
+        orbitControls.target.lerpVectors(flyAnim.startTarget, flyAnim.endTarget, ease);
+        orbitControls.update();
+        if (t >= 1) {
+          const cb = flyAnim.onComplete;
+          flyAnim = null;
+          if (cb) cb();
+        }
+      } else if (currentMode === 'walk') {
+        // 1. Apply swipe inertia when thumb/mouse is released
+        if (lookTouchId === null && !isMouseDragging) {
+          if (Math.abs(inertiaYaw) > 0.0001 || Math.abs(inertiaPitch) > 0.0001) {
+            targetYaw += inertiaYaw * dt;
+            targetPitch = THREE.MathUtils.clamp(targetPitch + inertiaPitch * dt, -Math.PI * 0.42, Math.PI * 0.42);
+            const decay = Math.exp(-9.5 * dt);
+            inertiaYaw *= decay;
+            inertiaPitch *= decay;
+          }
+        }
+
+        // 2. Smoothly interpolate camera orientation
+        const lookSmoothing = 1 - Math.exp(-26 * dt);
+        yaw = THREE.MathUtils.lerp(yaw, targetYaw, lookSmoothing);
+        pitch = THREE.MathUtils.lerp(pitch, targetPitch, lookSmoothing);
+
+        forwardVec.set(-Math.sin(yaw), 0, -Math.cos(yaw));
+        rightVec.set(Math.cos(yaw), 0, -Math.sin(yaw));
+
+        const inputZ = (keys.forward ? 1 : 0) - (keys.backward ? 1 : 0) + joyMoveY;
+        const inputX = (keys.right ? 1 : 0) - (keys.left ? 1 : 0) + joyMoveX;
+
+        desiredMove.set(0, 0, 0);
+
+        if (Math.abs(inputZ) > 0.01 || Math.abs(inputX) > 0.01) {
+          desiredMove.addScaledVector(forwardVec, inputZ);
+          desiredMove.addScaledVector(rightVec, inputX);
+          if (desiredMove.length() > 1) desiredMove.normalize();
+        } else if (autoWalkTarget) {
+          // Smooth One-Tap Floor Auto-Walk
+          const toTargetX = autoWalkTarget.x - playerFeet.x;
+          const toTargetZ = autoWalkTarget.z - playerFeet.z;
+          const distToTarget = Math.hypot(toTargetX, toTargetZ);
+          if (distToTarget < 0.35) {
+            autoWalkTarget = null;
+            tapRingMesh.visible = false;
+          } else {
+            const speedFactor = Math.min(1, distToTarget * 0.85);
+            desiredMove.set((toTargetX / distToTarget) * speedFactor, 0, (toTargetZ / distToTarget) * speedFactor);
+            tapRingMesh.scale.setScalar(0.9 + Math.sin(elapsed * 6) * 0.12);
+          }
+        }
+
+        const isSprinting = keys.sprint || joyAutoSprint;
+        const maxSpeed = isSprinting ? 7.5 : 4.3;
+
+        // 3. Smooth velocity acceleration & damping (zero jerkiness)
+        const velLerp = 1 - Math.exp(-15 * dt);
+        playerVelX = THREE.MathUtils.lerp(playerVelX, desiredMove.x * maxSpeed, velLerp);
+        playerVelZ = THREE.MathUtils.lerp(playerVelZ, desiredMove.z * maxSpeed, velLerp);
+
+        const currentSpeed = Math.hypot(playerVelX, playerVelZ);
+        if (currentSpeed > 0.02) {
+          const subSteps = 3;
+          const stepX = (playerVelX * dt) / subSteps;
+          const stepZ = (playerVelZ * dt) / subSteps;
+          for (let s = 0; s < subSteps; s++) {
+            playerFeet.x += stepX;
+            playerFeet.z += stepZ;
+            resolveHorizontalCollision(playerFeet, playerFeet.y);
+          }
+
+          if (isGrounded) {
+            const speedRatio = Math.min(1.4, currentSpeed / 4.3);
+            walkBobTimer += dt * 8.5 * speedRatio;
+            if (elapsed - lastStepTime > (isSprinting ? 0.34 : 0.48)) {
+              playFootstepSound();
+              lastStepTime = elapsed;
+            }
+          }
+        } else {
+          walkBobTimer = 0;
+        }
+
+        const floorY = sampleFloorHeight(playerFeet.x, playerFeet.z, playerFeet.y);
+        if (!isGrounded) {
+          playerVelY -= 14.5 * dt;
+          playerFeet.y += playerVelY * dt;
+          if (floorY !== null && playerFeet.y <= floorY) {
+            playerFeet.y = floorY;
+            playerVelY = 0;
+            isGrounded = true;
+          }
+        } else if (floorY !== null) {
+          playerFeet.y = THREE.MathUtils.lerp(playerFeet.y, floorY, Math.min(1, dt * 16));
+        }
+
+        const bobAmp = Math.min(1, currentSpeed / 4.0) * 0.032;
+        const bobOffset = Math.sin(walkBobTimer) * bobAmp;
+        camera.position.set(playerFeet.x, playerFeet.y + PLAYER_EYE_HEIGHT + bobOffset, playerFeet.z);
+        camera.rotation.order = 'YXZ';
+        camera.rotation.y = yaw;
+        camera.rotation.x = pitch;
+        camera.rotation.z = 0;
+      } else if (currentMode === 'aerial') {
+        orbitControls.update();
+      } else if (currentMode === 'tour') {
+        orbitControls.autoRotate = true;
+        orbitControls.autoRotateSpeed = 0.75;
+        orbitControls.update();
+        tourTimer += dt;
+        if (tourTimer > 9.5) {
+          tourTimer = 0;
+          tourIndex = (tourIndex + 1) % LANDMARKS.length;
+          focusLandmarkAcademic(LANDMARKS[tourIndex]);
+          currentMode = 'tour';
+          document.getElementById('btn-mode-aerial').classList.remove('active');
+          document.getElementById('btn-mode-tour').classList.add('active');
+        }
+      }
+
+      if (currentMode !== 'tour') {
+        orbitControls.autoRotate = false;
+      }
+
+      // Project 3D Hotspots cleanly
+      if (eduPointsOn) {
+        const halfW = window.innerWidth / 2;
+        const halfH = window.innerHeight / 2;
+        for (let i = 0; i < hotspotElements.length; i++) {
+          const item = hotspotElements[i];
+          projVec.copy(item.lm.target);
+          projVec.y += 1.6;
+          projVec.project(camera);
+
+          if (projVec.z > 1.0 || projVec.z < -1.0) {
+            item.el.style.opacity = '0';
+            item.el.style.pointerEvents = 'none';
+          } else {
+            const sx = (projVec.x * halfW) + halfW;
+            const sy = -(projVec.y * halfH) + halfH;
+            const dist = camera.position.distanceTo(item.lm.target);
+            const visible = dist < 155;
+            item.el.style.opacity = visible ? '1' : '0';
+            item.el.style.pointerEvents = visible ? 'auto' : 'none';
+            item.el.style.left = `${sx}px`;
+            item.el.style.top = `${sy}px`;
+          }
+        }
+      }
+
+      drawMinimap();
+      renderer.render(scene, camera);
+    }
+
+    animate();
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html>
